@@ -2,10 +2,11 @@
 
 namespace App\Filament\Resources\PelangganResource\Pages;
 
-use App\Filament\Resources\PelangganResource;
 use Filament\Actions;
-use Filament\Resources\Pages\CreateRecord;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
+use Filament\Resources\Pages\CreateRecord;
+use App\Filament\Resources\PelangganResource;
 
 class CreatePelanggan extends CreateRecord
 {
@@ -32,19 +33,23 @@ class CreatePelanggan extends CreateRecord
         //     "remote-address" => $data["profil"]["secret"]["remote_address"],
         // ];
 
-        $pelanggan = static::getModel()::create($dataPelanggan);
+        $pelanggan = DB::transaction(function () use($data, $dataPelanggan) {
+            $pelanggan = static::getModel()::create($dataPelanggan);
 
-        if ($pelanggan) {
-            // $secret = \App\Models\PPPoE\Secret::create($dataSecret);
+            if ($pelanggan) {
+                // $secret = \App\Models\PPPoE\Secret::create($dataSecret);
 
-            // $profile = \App\Models\ProfilPelanggan::create([
-            //     "pelanggan_id" => $pelanggan->id,
-            //     "secret_id" => $secret->id,
-            // ]);
-            $pelanggan->profil()->create([
-                "secret_id" => $data["secret_id"],
-            ]);
-        }
+                // $profile = \App\Models\ProfilPelanggan::create([
+                //     "pelanggan_id" => $pelanggan->id,
+                //     "secret_id" => $secret->id,
+                // ]);
+                $pelanggan->profil()->create([
+                    "secret_id" => $data["secret_id"],
+                ]);
+            }
+
+            return $pelanggan;
+        });
         return $pelanggan;
     }
 }

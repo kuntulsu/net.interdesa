@@ -13,8 +13,15 @@ return new class extends Migration {
         Schema::create("tagihan", function (Blueprint $table) {
             $table->id();
             $table->string("name");
-            $table->dateTime("end_date");
+            $table->unsignedBigInteger("pelanggan_id")->nullable();
+            $table->string("tipe_tagihan")->default("LAINYA");
+            $table->decimal("nominal_tagihan", 10, 0)->nullable();
+            $table->dateTime("end_date")->nullable();
             $table->timestamps();
+
+            $table->foreign("pelanggan_id")
+                ->references("id")
+                ->on("pelanggan");
         });
     }
 

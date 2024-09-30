@@ -28,19 +28,22 @@ class Pelanggan extends Model
             "secret_id"
         );
     }
-
     public function tagihan()
     {
-        // return $this->hasMany(Tagihan::class);
-        return $this->hasManyThrough(
-            Tagihan::class, // The target model
-            PembayaranPelanggan::class, // The intermediary model
-            "pelanggan_id", // Foreign key on the payments table
-            "id", // Foreign key on the bills table
-            "id", // Local key on the customers table
-            "tagihan_id" // Local key on the payments table
-        );
+        return $this->hasMany(Tagihan::class);
     }
+    // public function tagihan()
+    // {
+    //     // return $this->hasMany(Tagihan::class);
+    //     return $this->hasManyThrough(
+    //         Tagihan::class, // The target model
+    //         PembayaranPelanggan::class, // The intermediary model
+    //         "pelanggan_id", // Foreign key on the payments table
+    //         "id", // Foreign key on the bills table
+    //         "id", // Local key on the customers table
+    //         "tagihan_id" // Local key on the payments table
+    //     );
+    // }
 
     public function pembayaran()
     {

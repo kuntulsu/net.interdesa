@@ -44,7 +44,7 @@ class Secret extends Model
 
     protected function sushiShouldCache()
     {
-        return true;
+        return false;
     }
     public function getRows()
     {
@@ -88,8 +88,8 @@ class Secret extends Model
             }
 
             if (
-                isset($data["local-address"]) &&
-                isset($data["remote-address"])
+                isset($secret["local-address"]) &&
+                isset($secret["remote-address"])
             ) {
                 $data["local-address"] = $secret["local-address"];
                 $data["remote-address"] = $secret["remote-address"];

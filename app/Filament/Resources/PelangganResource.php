@@ -2,27 +2,28 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\PelangganResource\Pages;
-use App\Filament\Resources\PelangganResource\RelationManagers;
-use App\Models\Pelanggan;
 use Filament\Forms;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\DatePicker;
-
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Columns\TextColumn;
+use Filament\Forms\Form;
+use App\Models\Pelanggan;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Infolists\Infolist;
-use Filament\Infolists\Components\TextEntry;
+use Filament\Resources\Resource;
+
 use Filament\Resources\Pages\Page;
-use Filament\Pages\SubNavigationPosition;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Section;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Forms\Components\TextInput;
+use Filament\Notifications\Notification;
+use Filament\Forms\Components\DatePicker;
+use Filament\Pages\SubNavigationPosition;
+use Illuminate\Database\Eloquent\Builder;
+use Filament\Infolists\Components\TextEntry;
+use App\Filament\Resources\PelangganResource\Pages;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\PelangganResource\RelationManagers;
 
 class PelangganResource extends Resource
 {
@@ -63,7 +64,7 @@ class PelangganResource extends Resource
                         ->relationship("profil")
                         // ->hiddenOn("edit")
                         ->hidden(function ($record) {
-                            return $record->profil ? true : false;
+                            return $record?->profil ? true : false;
                         })
                         ->preload()
                         ->searchable()
@@ -106,16 +107,23 @@ class PelangganResource extends Resource
                                         ->ipv4(),
                                 ]),
                         ])
-                        ->createOptionUsing(function (array $data): string {
-                            return \App\Models\PPPoE\Secret::create(
+                        ->createOptionUsing(function (array $data): string|null {
+                            $secret = \App\Models\PPPoE\Secret::create(
                                 $data["secret"]
-                            )->getKey();
+                            );
+                            if($secret) {
+                                Notification::make()
+                                    ->title('Saved successfully')
+                                    ->success()
+                                    ->send();
+                            }
+                            return $secret?->getKey();
                         }),
                 ]),
             Section::make("Informasi Teknis")
                 ->columns(2)
                 ->hidden(function ($record) {
-                    return $record->profil ? false : true;
+                    return $record?->profil ? false : true;
                 })
                 ->schema([
                     Hidden::make("secret.id"),

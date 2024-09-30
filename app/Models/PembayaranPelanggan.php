@@ -25,4 +25,11 @@ class PembayaranPelanggan extends Model
     {
         return $this->hasOne(User::class, "id", "user_id");
     }
+
+    protected function casts(): array
+    {
+        return [
+            "nominal_tagihan" => "decimal:2"
+        ];
+    }
 }
