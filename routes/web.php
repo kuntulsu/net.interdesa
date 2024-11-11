@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Pelanggan;
 use App\Models\PembayaranPelanggan;
 use Illuminate\Support\Facades\Route;
 
@@ -8,15 +9,18 @@ Route::get("/", function () {
     // return view("welcome");
 });
 
-// Route::get("/test", function () {
-//     $data = \App\Models\PPPoE\Secret::where(
-//         "name",
-//         "ILHAM@STAFF.PECANGAANKULON.ID"
-//     )
-//         ->with("active")
-//         ->first();
-//     dd($data);
-// });
+Route::get("/test", function () {
+    $data = Pelanggan::whereDoesntHave("pembayaran")->get()->each(function($data) {
+        $secret = $data->profil->secret;
+        if(str($secret->name)->endsWith("@STAFF.PECANGAANKULON.ID")){
+            return;
+        }elseif(str($secret->name)->startsWith("ALFIANSYAH")){
+            return;
+        }
+        $secret->disable();
+        $secret->active?->dropConnection();
+    });
+});
 
 Route::get("/invoice/{pembayaran}", function(PembayaranPelanggan $pembayaran) {
 

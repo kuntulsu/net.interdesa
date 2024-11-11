@@ -44,7 +44,11 @@ class Pelanggan extends Model
     //         "tagihan_id" // Local key on the payments table
     //     );
     // }
-
+    public function isolirPelanggan()
+    {
+        $secret = $this->profil->secret;
+        dd($secret);
+    }
     public function pembayaran()
     {
         return $this->hasMany(PembayaranPelanggan::class);

@@ -8,6 +8,7 @@
         "php": "^8.2",
         "calebporzio/sushi": "^2.5",
         "filament/filament": "^3.2",
+        "itsgoingd/clockwork": "^5.2",
         "joshembling/image-optimizer": "^1.4",
         "laravel/framework": "^11.9",
         "laravel/tinker": "^2.9"

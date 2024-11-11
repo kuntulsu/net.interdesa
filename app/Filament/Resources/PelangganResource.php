@@ -184,15 +184,15 @@ class PelangganResource extends Resource
                     ->getStateUsing(function ($record){
                         return $record->profil?->secret?->name;
                     })
-                    ->icon(function (Pelanggan $record) {
-                        $secret = $record->profil?->secret;
-                        if ($secret?->disabled) {
-                            return "heroicon-o-x-circle";
-                        }
-                        return $secret?->active
-                            ? "heroicon-o-arrows-up-down"
-                            : "heroicon-o-link-slash";
-                    })
+                    // ->icon(function (Pelanggan $record) {
+                    //     $secret = $record->profil?->secret;
+                    //     if ($secret?->disabled) {
+                    //         return "heroicon-o-x-circle";
+                    //     }
+                    //     return $secret?->active
+                    //         ? "heroicon-o-arrows-up-down"
+                    //         : "heroicon-o-link-slash";
+                    // })
                     ->iconColor("primary"),
                 TextColumn::make("jatuh_tempo")->date("d F Y"),
             ])
