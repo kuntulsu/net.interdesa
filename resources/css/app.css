@@ -1,3 +1,13 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@media print {
+    button {
+        display: none;
+    }
+    header,
+    footer {
+        display: none;
+    }
+}

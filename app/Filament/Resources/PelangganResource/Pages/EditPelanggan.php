@@ -45,6 +45,10 @@ class EditPelanggan extends EditRecord
 
         return $record;
     }
+    public function getRelationManagers(): array
+    {
+        return [];
+    }
     protected function getHeaderActions(): array
     {
         return [Actions\DeleteAction::make()];

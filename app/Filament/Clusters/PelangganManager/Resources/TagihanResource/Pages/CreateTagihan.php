@@ -8,6 +8,7 @@ use Filament\Resources\Pages\CreateRecord;
 use App\Filament\Clusters\PelangganManager\Resources\TagihanResource;
 use App\Models\Pelanggan;
 use App\Models\Tagihan;
+use App\TipeTagihanEnum;
 use Filament\Notifications\Notification;
 
 class CreateTagihan extends CreateRecord
@@ -35,13 +36,16 @@ class CreateTagihan extends CreateRecord
 
             return $tagihan;
         }
-
-        return Tagihan::create([
-            "pelanggan_id" => null,
-            "name" => $data['name'],
-            "tipe_tagihan" => \App\TipeTagihanEnum::from("Lain Lain"),
-            "nominal_tagihan" => 0,
-            "end_date" => $data['end_date'] ?? null
-        ]);
+        if(isset($data['tipe_tagihan']) && $data['tipe_tagihan'] == TipeTagihanEnum::BULANAN->name){
+            $tagihan = Tagihan::create([
+                "pelanggan_id" => null,
+                "name" => $data['name'],
+                "tipe_tagihan" => \App\TipeTagihanEnum::to($data['tipe_tagihan']),
+                "nominal_tagihan" => 0,
+                "end_date" => $data['end_date'] ?? null
+            ]);
+            return $tagihan;
+        }
+        
     }
 }

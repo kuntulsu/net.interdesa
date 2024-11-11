@@ -13,7 +13,7 @@ class ProfilPelanggan extends Model
     protected $table = "profil_pelanggan";
     // protected $with = ["secret"];
     protected $guarded = [];
-    public function secret()
+    public function secret(): HasOne
     {
         return $this->hasOne(
             \App\Models\PPPoE\Secret::class,

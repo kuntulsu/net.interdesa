@@ -1,0 +1,10 @@
+{
+    "name": "Interdesa Pecangaan Administrator",
+    "icons": [
+        {
+            "src": "interdesa.png",
+            "type": "image/png",
+            "sizes": "512x512"
+        }
+    ]
+}

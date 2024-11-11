@@ -14,12 +14,12 @@ class PembayaranPelanggan extends Model
 
     public function pelanggan(): HasOne
     {
-        return $this->hasOne(Pelanggan::class);
+        return $this->hasOne(Pelanggan::class, "id", "pelanggan_id");
     }
 
     public function tagihan(): HasOne
     {
-        return $this->hasOne(Tagihan::class);
+        return $this->hasOne(Tagihan::class, "id", "tagihan_id");
     }
     public function operator(): HasOne
     {

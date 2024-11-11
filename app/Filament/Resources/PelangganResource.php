@@ -24,6 +24,8 @@ use Filament\Infolists\Components\TextEntry;
 use App\Filament\Resources\PelangganResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\PelangganResource\RelationManagers;
+use App\Filament\Clusters\PelangganManager\Resources\PelangganResource\RelationManagers\PembayaranRelationManager;
+use App\Filament\Resources\PelangganResource\Widgets\PelangganOverview;
 
 class PelangganResource extends Resource
 {
@@ -46,18 +48,21 @@ class PelangganResource extends Resource
                         ->label("NIK")
                         ->numeric()
                         ->inputMode("decimal")
+                        ->default("0000000000000000")
                         ->length(16)
                         ->required(),
                     TextInput::make("alamat")->label("Alamat")->required(),
                     TextInput::make("telp")
                         ->label("Nomor Telepon")
                         ->prefix("+62")
+                        ->default("000000000000")
                         ->numeric()
                         ->inputMode("decimal")
                         ->required(),
                     DatePicker::make("jatuh_tempo")
                         ->label("Jatuh Tempo")
                         ->native(false)
+                        ->default(\Carbon\Carbon::create("15-11-2024"))
                         ->required(),
                     Select::make("secret_id")
                         ->label("Connect to PPPoE Secret")
@@ -151,7 +156,12 @@ class PelangganResource extends Resource
                 ]),
         ]);
     }
-
+    public static function getWidgets(): array
+    {
+        return [
+            PelangganOverview::class
+        ];
+    }
     public static function getRecordSubNavigation(Page $page): array
     {
         return $page->generateNavigationItems([
@@ -162,9 +172,18 @@ class PelangganResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(function(Builder $query) {
+                $query->with(["profil" => function ($query){
+                    $query->with("secret");
+                }]);
+            })
             ->columns([
+
                 TextColumn::make("nama")->searchable(),
-                TextColumn::make("profil.secret.name")
+                TextColumn::make("secret_name")
+                    ->getStateUsing(function ($record){
+                        return $record->profil?->secret?->name;
+                    })
                     ->icon(function (Pelanggan $record) {
                         $secret = $record->profil?->secret;
                         if ($secret?->disabled) {
@@ -194,7 +213,7 @@ class PelangganResource extends Resource
     public static function getRelations(): array
     {
         return [
-            \App\Filament\Clusters\PelangganManager\Resources\PelangganResource\RelationManagers\PembayaranRelationManager::class,
+            PembayaranRelationManager::class,
         ];
     }
 

@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
+use Filament\Notifications\Notification;
 use Filament\Tables\Columns\TextInputColumn;
 
 class PaketResource extends Resource
@@ -39,6 +40,7 @@ class PaketResource extends Resource
             ->columns([
                 TextColumn::make("name"),
                 TextInputColumn::make("harga.harga")
+                    ->type("number")
                     ->inputMode("decimal")
                     ->beforeStateUpdated(function ($record, $state) {
                         $harga = \App\Models\HargaPaket::where(
@@ -51,7 +53,12 @@ class PaketResource extends Resource
                                 "harga" => 0,
                             ]);
                         }
-                    }),
+                    })
+                    ->afterStateUpdated(fn() => Notification::make("save_success")
+                        ->success()
+                        ->title("Saved Successfully")
+                        ->send()
+                    ),
 
                 // TextColumn::make("harga.harga")->money("IDR"),
             ])

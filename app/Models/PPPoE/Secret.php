@@ -49,9 +49,8 @@ class Secret extends Model
     public function getRows()
     {
         try {
-            $response = Http::withBasicAuth("admin", "admin")->get(
-                "http://192.168.56.101/rest/ppp/secret"
-            );
+            $response = Http::routeros()
+                ->get("/ppp/secret");
             $data = $response->collect();
 
             return $this->toSchema($data);
@@ -75,6 +74,20 @@ class Secret extends Model
     {
         return $this->hasOne(\App\Models\PPPoE\Active::class, "name", "name");
     }
+    public function disable()
+    {
+        $response = Http::routeros()->patch("/ppp/secret/{$this->id}", [
+            "disabled" => "yes"
+        ]);
+        if($response->ok()){
+            $secret = $response->collect();
+            if($secret['disabled'] == "true"){
+                return true;
+            }
+        }else{
+            return false;
+        }
+    }
     protected static function booted(): void
     {
         static::created(function (Secret $secret) {
@@ -95,8 +108,8 @@ class Secret extends Model
                 $data["remote-address"] = $secret["remote-address"];
             }
 
-            $response = Http::withBasicAuth("admin", "admin")
-                ->put("http://192.168.56.101/rest/ppp/secret", $data)
+            $response = Http::routeros()
+                ->put("/ppp/secret", $data)
                 ->json();
             $secret->id = $response[".id"];
             // \App\Models\ProfilPelanggan::create([
@@ -113,9 +126,9 @@ class Secret extends Model
                 "remote-address" => $secret["remote-address"],
             ];
             $active = $secret->active;
-            $response = Http::withBasicAuth("admin", "admin")
+            $response = Http::routeros()
                 ->patch(
-                    "http://192.168.56.101/rest/ppp/secret/{$secret->id}",
+                    "/ppp/secret/{$secret->id}",
                     $data
                 )
                 ->json();

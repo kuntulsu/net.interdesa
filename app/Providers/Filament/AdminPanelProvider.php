@@ -2,6 +2,8 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Resources\PelangganResource;
+use App\Filament\Resources\PelangganResource\Widgets\PelangganOverview;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
@@ -27,8 +29,10 @@ class AdminPanelProvider extends PanelProvider
             ->id("admin")
             ->path("admin")
             ->login()
+            ->brandName('Interdesa Pecangaan')
+            ->brandLogo(asset("interdesa.png"))
             ->colors([
-                "primary" => Color::Amber,
+                "primary" => Color::Blue,
             ])
             ->discoverResources(
                 in: app_path("Filament/Resources"),
@@ -49,7 +53,8 @@ class AdminPanelProvider extends PanelProvider
             )
             ->widgets([
                 Widgets\AccountWidget::class,
-                Widgets\FilamentInfoWidget::class,
+                // Widgets\FilamentInfoWidget::class,
+                PelangganOverview::class
             ])
             ->middleware([
                 EncryptCookies::class,

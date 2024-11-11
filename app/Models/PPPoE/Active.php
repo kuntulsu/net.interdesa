@@ -20,8 +20,8 @@ class Active extends Model
     public function dropConnection()
     {
         try {
-            $response = Http::withBasicAuth("admin", "admin")->delete(
-                "http://192.168.56.101/rest/ppp/active/{$this->id}"
+            $response = Http::routeros()->delete(
+                "/ppp/active/{$this->id}"
             );
         } catch (\Exception $e) {
             dd($e);
@@ -30,8 +30,8 @@ class Active extends Model
     public function getRows(): array
     {
         try {
-            $response = Http::withBasicAuth("admin", "admin")->get(
-                "http://192.168.56.101/rest/ppp/active"
+            $response = Http::routeros()->get(
+                "/ppp/active"
             );
             $data = $response->collect();
             $actives = [];

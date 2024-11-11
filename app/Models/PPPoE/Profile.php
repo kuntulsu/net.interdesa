@@ -15,8 +15,8 @@ class Profile extends Model
     public function getRows(): array
     {
         try {
-            $response = Http::withBasicAuth("admin", "admin")->get(
-                "http://192.168.56.101/rest/ppp/profile"
+            $response = Http::routeros()->get(
+                "/ppp/profile"
             );
             if ($response->ok()) {
                 $profiles = [];
@@ -46,8 +46,8 @@ class Profile extends Model
                 "name" => $profile->name,
                 "rate-limit" => $profile->rate_limit,
             ];
-            $response = Http::withBasicAuth("admin", "admin")->put(
-                "http://192.168.56.101/rest/ppp/profile",
+            $response = Http::routeros()->put(
+                "/ppp/profile",
                 $data
             );
         });

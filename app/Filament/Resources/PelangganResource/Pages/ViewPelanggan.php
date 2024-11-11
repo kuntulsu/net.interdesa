@@ -2,17 +2,19 @@
 
 namespace App\Filament\Resources\PelangganResource\Pages;
 
-use App\Filament\Resources\PelangganResource;
-use Filament\Infolists\Components\Section;
-use Filament\Resources\Pages\ViewRecord;
+use App\Models\Pelanggan;
+use App\Models\PPPoE\Secret;
 use Filament\Infolists\Infolist;
-use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Components\Tabs;
-use Filament\Infolists\Components\Actions\Action;
-use Filament\Infolists\Components\Actions;
-use Filament\Pages\SubNavigationPosition;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Notifications\Notification;
+use Filament\Resources\Pages\ViewRecord;
+use Filament\Pages\SubNavigationPosition;
+use Filament\Infolists\Components\Actions;
+use Filament\Infolists\Components\Section;
+use Filament\Infolists\Components\TextEntry;
+use App\Filament\Resources\PelangganResource;
+use Filament\Infolists\Components\Actions\Action;
 
 class ViewPelanggan extends ViewRecord
 {
@@ -63,8 +65,19 @@ class ViewPelanggan extends ViewRecord
                                 $action->modalDescription(
                                     "Akan Mengisolir Koneksi PPPoE"
                                 );
-
                                 return $action;
+                            })
+                            ->action(function (Pelanggan $record){
+                                $secret = $record->profil->secret;
+                                $disable = $secret?->disable();
+                                $secret?->active?->dropConnection();
+                                if($disable) {
+                                    Notification::make()
+                                        ->title("Secret Disabled Successfully")
+                                        ->success()
+                                        ->send();
+                                    return true;
+                                }
                             })
                             ->color("danger")
                             ->icon("heroicon-o-power"),
