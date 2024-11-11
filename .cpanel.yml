@@ -2,4 +2,4 @@
 deployment:
   tasks:
     - export DEPLOYPATH=~/public_html/
-    - /bin/cp -R net.interdesa $DEPLOYPATH
+    - /bin/cp -R ../net.interdesa $DEPLOYPATH
