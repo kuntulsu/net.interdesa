@@ -6,8 +6,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-
-class User extends Authenticatable
+use Filament\Panel;
+use Filament\Models\Contracts\FilamentUser;
+class User extends Authenticatable implements FilamentUser
 {
     use HasFactory, Notifiable;
 
@@ -21,7 +22,11 @@ class User extends Authenticatable
         'email',
         'password',
     ];
-
+    public function canAccessPanel(Panel $panel): bool
+    {
+        return true;
+        // return str_ends_with($this->email, '@yourdomain.com') && $this->hasVerifiedEmail();
+    }
     /**
      * The attributes that should be hidden for serialization.
      *
