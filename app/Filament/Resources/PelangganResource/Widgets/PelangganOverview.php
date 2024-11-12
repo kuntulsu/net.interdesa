@@ -26,10 +26,10 @@ class PelangganOverview extends BaseWidget
         $progress_tagihan_percent = ($pembayaran?->count() <= 0 || $pelanggan_count <= 0) 
             ? 0
             : ($pembayaran?->count() / $pelanggan_count * 100); 
-        $total_tagihan_terbayar = "IDR ".Number::format($tagihan?->pembayaran()?->sum("nominal_tagihan"), 2);
+        $total_tagihan_terbayar = "IDR ".Number::format($tagihan?->pembayaran()?->sum("nominal_tagihan") ?? 0, 2);
         $sum_total_tagihan = ProfilPelanggan::with("secret.paket.harga")->get()->sum("secret.paket.harga.harga");
         $ekspektasi_total_tagihan = "IDR ".Number::format($sum_total_tagihan, 2);
-        return [
+        return [    
             Stat::make('Total Pelanggan', $pelanggan_count)
                 ->description('32k increase')
                 ->descriptionIcon('heroicon-m-arrow-trending-up')

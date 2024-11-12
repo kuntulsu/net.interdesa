@@ -25,7 +25,13 @@ class PembayaranPelanggan extends Model
     {
         return $this->hasOne(User::class, "id", "user_id");
     }
-
+    protected static function booted(): void
+    {
+        static::created(function (PembayaranPelanggan $pembayaran){
+            $secret = $pembayaran->pelanggan->profil->secret;
+            $secret->enable();
+        });
+    }
     protected function casts(): array
     {
         return [

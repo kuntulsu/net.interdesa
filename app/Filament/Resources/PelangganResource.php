@@ -180,10 +180,10 @@ class PelangganResource extends Resource
             ->columns([
 
                 TextColumn::make("nama")->searchable(),
-                TextColumn::make("secret_name")
-                    ->getStateUsing(function ($record){
-                        return $record->profil?->secret?->name;
-                    })
+                TextColumn::make("alamat")->searchable()
+                    // ->getStateUsing(function ($record){
+                    //     return $record->profil?->secret?->name;
+                    // })
                     // ->icon(function (Pelanggan $record) {
                     //     $secret = $record->profil?->secret;
                     //     if ($secret?->disabled) {

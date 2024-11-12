@@ -74,6 +74,12 @@ class Secret extends Model
     {
         return $this->hasOne(\App\Models\PPPoE\Active::class, "name", "name");
     }
+    public function enable()
+    {
+        $response = Http::routeros()->patch("/ppp/secret/{$this->id}", [
+            "disabled" => "no"
+        ]);
+    }
     public function disable()
     {
         $response = Http::routeros()->patch("/ppp/secret/{$this->id}", [
@@ -88,6 +94,7 @@ class Secret extends Model
             return false;
         }
     }
+    
     protected static function booted(): void
     {
         static::created(function (Secret $secret) {
@@ -122,9 +129,10 @@ class Secret extends Model
                 "name" => $secret->name,
                 "password" => $secret->password,
                 "profile" => $secret->profile,
-                "local-address" => $secret["local-address"],
-                "remote-address" => $secret["remote-address"],
+                "local-address" => $secret["local-address"] ?? "null",
+                "remote-address" => $secret["remote-address"] ?? "null",
             ];
+            // dd($secret->id);
             $active = $secret->active;
             $response = Http::routeros()
                 ->patch(
@@ -133,6 +141,7 @@ class Secret extends Model
                 )
                 ->json();
             $active?->dropConnection();
+            dd($response, $data);
         });
     }
     protected function casts(): array

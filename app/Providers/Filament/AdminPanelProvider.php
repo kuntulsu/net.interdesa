@@ -29,6 +29,7 @@ class AdminPanelProvider extends PanelProvider
             ->id("admin")
             ->path("admin")
             ->login()
+            ->spa()
             ->brandName('Interdesa Pecangaan')
             ->brandLogo(asset("interdesa.png"))
             ->colors([
