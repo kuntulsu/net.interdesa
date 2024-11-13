@@ -52,20 +52,21 @@ class PembayaranPelangganResource extends Resource
                 TextColumn::make("created_at")
                     ->label("Waktu Pembayaran")
                     ->date("d-F-Y H:i:s"),
-                TextColumn::make("pelanggan_name")
+                TextColumn::make("pelanggan.nama")
                     ->label("Nama Pelanggan")
                     ->searchable()
-                    ->getStateUsing(function ($record) {
-                        return $record->pelanggan->nama;
-                    }),
+                    // ->getStateUsing(function ($record) {
+                    //     return $record->pelanggan->nama;
+                    // })
+                    ,
                 TextColumn::make("nominal_tagihan")
                     ->money("IDR"),
-                TextColumn::make("operator_name")
+                TextColumn::make("operator.name")
                     ->searchable()
                     ->label("Operator")
-                    ->getStateUsing(function ($record){
-                        return $record->operator->name;
-                    }),
+                    // ->getStateUsing(function ($record){
+                    //     return $record->operator->name;
+                    // }),
                 
             ])
             ->filters([
