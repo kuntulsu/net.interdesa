@@ -62,7 +62,6 @@ class PembayaranPelangganResource extends Resource
                 TextColumn::make("nominal_tagihan")
                     ->money("IDR"),
                 TextColumn::make("operator.name")
-                    ->searchable()
                     ->label("Operator")
                     // ->getStateUsing(function ($record){
                     //     return $record->operator->name;
