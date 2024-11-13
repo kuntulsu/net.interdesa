@@ -44,11 +44,14 @@ class PembayaranPelangganResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->modifyQueryUsing(function ($query){
-                return $query->with(["operator", "tagihan", "pelanggan"])
-                    ->orderBy("created_at", "DESC");
-            })
-            ->columns([
+        ->modifyQueryUsing(function ($query){
+            return $query->with(["operator", "tagihan", "pelanggan"])
+            ->orderBy("created_at", "DESC");
+        })
+        ->columns([
+                TextColumn::make("created_at")
+                    ->label("Waktu Pembayaran")
+                    ->date("d-F-Y H:i:s"),
                 TextColumn::make("pelanggan_name")
                     ->label("Nama Pelanggan")
                     ->searchable()
@@ -63,9 +66,6 @@ class PembayaranPelangganResource extends Resource
                     ->getStateUsing(function ($record){
                         return $record->operator->name;
                     }),
-                TextColumn::make("created_at")
-                    ->label("Tanggal Pembayaran")
-                    ->date("d-F-Y H:i:s")
                 
             ])
             ->filters([
