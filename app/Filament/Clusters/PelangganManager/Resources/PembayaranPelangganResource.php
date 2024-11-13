@@ -45,7 +45,8 @@ class PembayaranPelangganResource extends Resource
     {
         return $table
             ->modifyQueryUsing(function ($query){
-                return $query->with(["operator", "tagihan", "pelanggan"]);
+                return $query->with(["operator", "tagihan", "pelanggan"])
+                    ->orderBy("created_at", "DESC");
             })
             ->columns([
                 TextColumn::make("pelanggan_name")
