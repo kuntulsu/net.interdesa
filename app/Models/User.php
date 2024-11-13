@@ -8,6 +8,8 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Filament\Panel;
 use Filament\Models\Contracts\FilamentUser;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+
 class User extends Authenticatable implements FilamentUser
 {
     use HasFactory, Notifiable;
@@ -22,6 +24,10 @@ class User extends Authenticatable implements FilamentUser
         'email',
         'password',
     ];
+    public function payment_handled(): HasMany
+    {
+        return $this->hasMany(PembayaranPelanggan::class, "user_id", "id");
+    }
     public function canAccessPanel(Panel $panel): bool
     {
         return true;

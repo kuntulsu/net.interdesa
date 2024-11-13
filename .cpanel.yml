@@ -3,3 +3,5 @@ deployment:
   tasks:
     - export DEPLOYPATH=~/public_html/
     - /bin/cp -R ../net.interdesa $DEPLOYPATH
+    - /opt/alt/php83/usr/bin/php ~/public_html/net.interdesa/artisan filament:optimize-clear
+    - /opt/alt/php83/usr/bin/php ~/public_html/net.interdesa/artisan filament:optimize

@@ -1,0 +1,25 @@
+<?php
+
+namespace App\Filament\Clusters\PelangganManager\Resources\PembayaranPelangganResource\Pages;
+
+use Filament\Actions;
+use Filament\Resources\Pages\ListRecords;
+use App\Filament\Clusters\PelangganManager\Resources\PembayaranPelangganResource;
+use App\Filament\Clusters\PelangganManager\Resources\PembayaranPelangganResource\Widgets\PaymentPerUserOverview;
+
+class ListPembayaranPelanggans extends ListRecords
+{
+    protected static string $resource = PembayaranPelangganResource::class;
+    protected function getHeaderWidgets(): array
+    {
+        return [
+            PaymentPerUserOverview::class
+        ];
+    }
+    protected function getHeaderActions(): array
+    {
+        return [
+            Actions\CreateAction::make(),
+        ];
+    }
+}
