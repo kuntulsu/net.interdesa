@@ -65,7 +65,7 @@ class PembayaranPelangganResource extends Resource
                     }),
                 TextColumn::make("created_at")
                     ->label("Tanggal Pembayaran")
-                    ->date("d F Y")
+                    ->date("d-F-Y H:i:s")
                 
             ])
             ->filters([
