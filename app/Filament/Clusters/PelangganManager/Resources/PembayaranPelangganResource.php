@@ -70,6 +70,7 @@ class PembayaranPelangganResource extends Resource
             ])
             ->filters([
                 SelectFilter::make('user_id')
+                    ->label("Operator")
                     ->options(fn (): array => User::query()->pluck('name', 'id')->all()),
                 Filter::make('created_at')
                     ->form([
@@ -89,12 +90,12 @@ class PembayaranPelangganResource extends Resource
                     })
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                // Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
+                // Tables\Actions\BulkActionGroup::make([
+                //     Tables\Actions\DeleteBulkAction::make(),
+                // ]),
             ]);
     }
 
