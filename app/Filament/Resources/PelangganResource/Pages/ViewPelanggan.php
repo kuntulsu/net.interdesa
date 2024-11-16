@@ -15,7 +15,7 @@ use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\TextEntry;
 use App\Filament\Resources\PelangganResource;
 use Filament\Infolists\Components\Actions\Action;
-
+use Illuminate\Support\Facades\Log;
 class ViewPelanggan extends ViewRecord
 {
     protected static string $resource = PelangganResource::class;
@@ -23,6 +23,7 @@ class ViewPelanggan extends ViewRecord
 
     public function infolist(Infolist $infolist): Infolist
     {
+        $secret = $this->getRecord()->profil->secret;
         return $infolist->schema([
             Section::make("Informasi Pribadi")
                 ->columns(2)
@@ -82,28 +83,43 @@ class ViewPelanggan extends ViewRecord
                             ->color("danger")
                             ->icon("heroicon-o-power"),
                     ]),
-                    TextEntry::make("profil.secret.name")
+                    TextEntry::make("sec_name")
+                        ->getStateUsing(function ($record) use ($secret){
+                            return $secret->name;
+                        })
                         ->copyable()
                         ->copyMessage("Copied.")
                         ->label("PPPoE Username"),
-                    TextEntry::make("profil.secret.password")
+                    TextEntry::make("sec_password")
+                        ->getStateUsing(function ($record) use ($secret){
+                            return $secret->password;
+                        })
                         ->copyable()
                         ->copyMessage("Copied.")
                         ->label("PPPoE Password"),
-                    TextEntry::make("profil.secret.local-address")
+                    TextEntry::make("sec_local-address")
+                        ->getStateUsing(function ($record) use ($secret){
+                            return $secret['local-address'];
+                        })
                         ->copyable()
                         ->copyMessage("Copied.")
                         ->label("PPPoE Local Address"),
-                    TextEntry::make("profil.secret.remote-address")
+                    TextEntry::make("sec_remote-address")
+                        ->getStateUsing(function ($record) use ($secret){
+                            return $secret['remote-address'];
+                        })
                         ->copyable()
                         ->copyMessage("Copied.")
                         ->label("PPPoE Remote Address"),
-                    TextEntry::make("profil.secret.profile")->label(
-                        "Profile Paket"
-                    ),
-                    TextEntry::make("profil.secret.service")->label(
-                        "Tipe Layanan"
-                    ),
+                    TextEntry::make("sec_profile")
+                        ->getStateUsing(function ($record) use ($secret){
+                            return $secret->profile;
+                        })
+                        ->label("Profile Paket"),
+                    TextEntry::make("sec_service")
+                    ->getStateUsing(function ($record) use ($secret){
+                        return $secret->service;
+                    })->label("Tipe Layanan"),
                 ])
                 ->collapsible(),
         ]);

@@ -172,11 +172,11 @@ class PelangganResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->modifyQueryUsing(function(Builder $query) {
-                $query->with(["profil" => function ($query){
-                    $query->with("secret");
-                }]);
-            })
+            // ->modifyQueryUsing(function(Builder $query) {
+            //     $query->with(["profil" => function ($query){
+            //         $query->with("secret");
+            //     }]);
+            // })
             ->columns([
 
                 TextColumn::make("nama")->searchable(),

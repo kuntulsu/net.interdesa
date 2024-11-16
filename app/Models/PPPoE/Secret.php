@@ -2,10 +2,11 @@
 
 namespace App\Models\PPPoE;
 
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Http;
 
 class Secret extends Model
 {
@@ -44,10 +45,11 @@ class Secret extends Model
 
     protected function sushiShouldCache()
     {
-        return false;
+        return true;
     }
     public function getRows()
     {
+        // Log::info('Model called from:', debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 5));
         try {
             $response = Http::routeros()
                 ->get("/ppp/secret");

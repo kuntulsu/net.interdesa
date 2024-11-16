@@ -12,6 +12,10 @@ class Profile extends Model
     use Sushi;
     protected $primaryKey = "id";
     protected $guarded = [];
+    protected function sushiShouldCache()
+    {
+        return true;
+    }
     public function getRows(): array
     {
         try {
