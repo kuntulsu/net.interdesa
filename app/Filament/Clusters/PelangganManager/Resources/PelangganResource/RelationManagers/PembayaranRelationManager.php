@@ -27,6 +27,7 @@ class PembayaranRelationManager extends RelationManager
 {
     protected static string $relationship = "tagihan";
     protected bool $lunas = false;
+    protected static bool $isLazy = false;
     public function isReadOnly(): bool
     {
         return false;
