@@ -20,4 +20,4 @@ deployment:
     - $php83 $DEPLOYPATH/artisan optimize
     - $php83 $DEPLOYPATH/artisan view:cache
     - $php83 $DEPLOYPATH/artisan route:cache
-    - $php83 DEPLOYPATH/artisan config:cache
+    - $php83 $DEPLOYPATH/artisan config:cache
