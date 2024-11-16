@@ -11,7 +11,7 @@ deployment:
     - /bin/cp -R resources $DEPLOYPATH
     - /bin/cp -R routes $DEPLOYPATH
     - /bin/cp -R storage $DEPLOYPATH
-    - /bin/cp -R test $DEPLOYPATH
+    - /bin/cp -R tests $DEPLOYPATH
     - /bin/cp -R artisan $DEPLOYPATH
     - /bin/cp -R composer.json $DEPLOYPATH
     - /bin/cp -R composer.lock $DEPLOYPATH
