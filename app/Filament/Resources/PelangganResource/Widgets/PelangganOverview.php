@@ -15,7 +15,7 @@ class PelangganOverview extends BaseWidget
 {
 
     protected static ?string $pollingInterval = null;
-
+    protected static bool $isLazy = false;
 
     protected function getStats(): array
     {

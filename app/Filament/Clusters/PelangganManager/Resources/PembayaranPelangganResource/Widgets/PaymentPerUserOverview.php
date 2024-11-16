@@ -10,6 +10,9 @@ use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 
 class PaymentPerUserOverview extends BaseWidget
 {
+    protected static ?string $pollingInterval = null;
+    protected static bool $isLazy = false;
+
     protected function getStats(): array
     {
         $users = User::withSum("payment_handled", "nominal_tagihan")->get();
