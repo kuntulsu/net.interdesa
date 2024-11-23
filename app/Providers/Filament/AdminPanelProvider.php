@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Resources\AdminResource\Widgets\SystemResource;
 use App\Filament\Resources\PelangganResource;
 use App\Filament\Resources\PelangganResource\Widgets\PelangganOverview;
 use Filament\Http\Middleware\Authenticate;
@@ -53,9 +54,10 @@ class AdminPanelProvider extends PanelProvider
                 for: "App\\Filament\\Widgets"
             )
             ->widgets([
+                SystemResource::class,
                 Widgets\AccountWidget::class,
                 // Widgets\FilamentInfoWidget::class,
-                PelangganOverview::class
+                PelangganOverview::class,
             ])
             ->middleware([
                 EncryptCookies::class,

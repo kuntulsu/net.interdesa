@@ -28,6 +28,10 @@ class Pelanggan extends Model
             "secret_id"
         );
     }
+    public function odp(): HasOne
+    {
+        return $this->hasOne(ODP::class, "id", "odp_id");
+    }
     public function tagihan()
     {
         return $this->hasMany(Tagihan::class);
@@ -47,6 +51,7 @@ class Pelanggan extends Model
     public function isolirPelanggan()
     {
         $secret = $this->profil->secret;
+        
         dd($secret);
     }
     public function pembayaran()

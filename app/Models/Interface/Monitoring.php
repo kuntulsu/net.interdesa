@@ -2,32 +2,32 @@
 
 namespace App\Models\Interface;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Http;
+use Sushi\Sushi;
 
-class Monitoring
+class Monitoring extends Model
 {
     
-    public string $interface;
-    public string $id;
+    Use Sushi;
 
-    function __construct($interface = null)
+    public function getRows()
     {
-        $this->interface = $interface;
+        $interface = Http::routeros()
+            ->get("/interface");
+        dd($interface->json());
+        // return $interface->json();
 
     }
-    public static function interface($interface)
-    {
-        
-        return new static($interface);
-    }
-    
-    public function fetch()
-    {
-        $response = Http::withBasicAuth("admin","admin")->get("http://192.168.56.101/rest/interface/{$this->interface}");
-        
-        if($response->ok()){
-            return $response->json();
-        }
 
+    public static function monitor($interface)
+    {
+        $response = Http::routeros()
+            ->post("/interface/monitor-traffic", [
+                "interface" => $interface,
+                "once" => true
+            ]);
+        
+        return $response->json();
     }
 }
