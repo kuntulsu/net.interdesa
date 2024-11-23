@@ -71,12 +71,12 @@ class PelangganRelationManager extends RelationManager
             ])
             ->actions([
                 // Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make()->requiresConfirmation(),
-            ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
+                Tables\Actions\DeleteAction::make()
+                    ->using(function($record) {
+                        $record->odp_id = null;
+                        $record->save();
+                    })
+                    ->requiresConfirmation(),
             ]);
     }
 }
