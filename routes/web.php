@@ -28,3 +28,7 @@ Route::get("/invoice/{pembayaran}", function(PembayaranPelanggan $pembayaran) {
         "pembayaran" => $pembayaran
     ]);
 })->name("invoice");
+
+Route::get("promo-akhir-tahun", function (){
+    return redirect("https://api.whatsapp.com/send/?phone=6285157180664");
+});

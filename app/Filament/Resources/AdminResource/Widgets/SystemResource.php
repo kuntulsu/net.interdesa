@@ -6,6 +6,7 @@ use App\Models\Interface\Monitoring;
 use App\Models\System\Resource;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
+use Illuminate\Support\Facades\Concurrency;
 use Illuminate\Support\Number;
 
 class SystemResource extends BaseWidget
@@ -17,10 +18,11 @@ class SystemResource extends BaseWidget
 
     protected function getStats(): array
     {
+
         $resource = Resource::first();
+        $monitoring = Monitoring::monitor("ether1");
         $cpu_usage = $resource['cpu-load'];
         $memory_usg = $resource['total-memory'] - $resource['free-memory'];
-        $monitoring = Monitoring::monitor("ether1");
         $traffic_usg = $monitoring[0]['rx-bits-per-second'] / 1024 / 1024;
         $traffic_usg = Number::format($traffic_usg, 2);
         array_push($this->cpu_usage_history, $cpu_usage);

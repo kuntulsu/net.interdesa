@@ -3,22 +3,20 @@ deployment:
   tasks:
     - export DEPLOYPATH=~/public_html/net.interdesa
     - export php83=/opt/alt/php83/usr/bin/php
-    - /bin/cp -R app $DEPLOYPATH
-    - /bin/cp -R bootstrap $DEPLOYPATH
-    - /bin/cp -R config $DEPLOYPATH
-    - /bin/cp -R database $DEPLOYPATH
-    - /bin/cp -R public $DEPLOYPATH
-    - /bin/cp -R resources $DEPLOYPATH
-    - /bin/cp -R routes $DEPLOYPATH
-    - /bin/cp -R storage $DEPLOYPATH
-    - /bin/cp -R tests $DEPLOYPATH
-    - /bin/cp -R artisan $DEPLOYPATH
-    - /bin/cp -R composer.json $DEPLOYPATH
-    - /bin/cp -R composer.lock $DEPLOYPATH
+    - /bin/cp -R -f app $DEPLOYPATH
+    - /bin/cp -R -f bootstrap $DEPLOYPATH
+    - /bin/cp -R -f config $DEPLOYPATH
+    - /bin/cp -R -f database $DEPLOYPATH
+    - /bin/cp -R -f public $DEPLOYPATH
+    - /bin/cp -R -f resources $DEPLOYPATH
+    - /bin/cp -R -f routes $DEPLOYPATH
+    - /bin/cp -R -f storage $DEPLOYPATH
+    - /bin/cp -R -f tests $DEPLOYPATH
+    - /bin/cp -R -f artisan $DEPLOYPATH
+    - /bin/cp -R -f composer.json $DEPLOYPATH
+    - /bin/cp -R -f composer.lock $DEPLOYPATH
     - cd $DEPLOYPATH && $php83 $DEPLOYPATH/composer.phar update
     - $php83 $DEPLOYPATH/artisan filament:optimize-clear
     - $php83 $DEPLOYPATH/artisan filament:optimize
+    - $php83 $DEPLOYPATH/artisan optimize:clear
     - $php83 $DEPLOYPATH/artisan optimize
-    - $php83 $DEPLOYPATH/artisan view:cache
-    - $php83 $DEPLOYPATH/artisan config:cache
-    - $php83 $DEPLOYPATH/artisan route:cache
