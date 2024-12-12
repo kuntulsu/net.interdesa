@@ -12,9 +12,9 @@ Route::get("/", function () {
 
 Route::get("/test", function () {
     $tagihan = Tagihan::first();
-    $data = Pelanggan::whereDoesntHave(["pembayaran" => function ($query) use ($tagihan){
+    $data = Pelanggan::whereDoesntHave("pembayaran", function ($query) use ($tagihan) {
         $query->where("tagihan_id", $tagihan->id);
-    }])->get()->each(function($data) {
+    })->get()->each(function($data) {
         $secret = $data->profil->secret;
         if(str($secret->name)->endsWith("@STAFF.PECANGAANKULON.ID")){
             return;
