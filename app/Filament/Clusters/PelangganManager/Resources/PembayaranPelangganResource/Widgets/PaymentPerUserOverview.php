@@ -7,12 +7,15 @@ use App\Models\Tagihan;
 use Illuminate\Support\Number;
 use App\Models\PembayaranPelanggan;
 use Filament\Widgets\StatsOverviewWidget\Stat;
+use Filament\Tables\Concerns\InteractsWithTable;
+use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 
 class PaymentPerUserOverview extends BaseWidget
 {
     protected static ?string $pollingInterval = null;
     protected static bool $isLazy = false;
+    use InteractsWithTable;
 
     protected function getStats(): array
     {

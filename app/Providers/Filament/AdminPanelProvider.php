@@ -5,12 +5,14 @@ namespace App\Providers\Filament;
 use App\Filament\Resources\AdminResource\Widgets\SystemResource;
 use App\Filament\Resources\PelangganResource;
 use App\Filament\Resources\PelangganResource\Widgets\PelangganOverview;
+use App\Livewire\ServerInfo;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
+use Filament\Support\Assets\Css;
 use Filament\Support\Colors\Color;
 use Filament\Widgets;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
@@ -33,6 +35,13 @@ class AdminPanelProvider extends PanelProvider
             ->spa()
             ->brandName('Interdesa Pecangaan')
             ->brandLogo(asset("interdesa.png"))
+            ->renderHook(
+                \Filament\View\PanelsRenderHook::USER_MENU_BEFORE,
+                fn (): string => \Illuminate\Support\Facades\Blade::render('@livewire(\App\Livewire\ServerIndicator::class)'),
+            )
+            ->assets([
+                Css::make("my-stylesheet", resource_path("css/app.css"))
+            ])
             ->colors([
                 "primary" => Color::Blue,
             ])
@@ -48,12 +57,17 @@ class AdminPanelProvider extends PanelProvider
                 in: app_path("Filament/Clusters"),
                 for: "App\\Filament\\Clusters"
             )
+            ->plugins([
+                \TomatoPHP\FilamentUsers\FilamentUsersPlugin::make(),
+                \BezhanSalleh\FilamentShield\FilamentShieldPlugin::make()
+            ])
             ->pages([Pages\Dashboard::class])
             ->discoverWidgets(
                 in: app_path("Filament/Widgets"),
                 for: "App\\Filament\\Widgets"
             )
             ->widgets([
+                // ServerInfo::class,
                 SystemResource::class,
                 Widgets\AccountWidget::class,
                 // Widgets\FilamentInfoWidget::class,

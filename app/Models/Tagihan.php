@@ -28,10 +28,13 @@ class Tagihan extends Model
             $terbayar = $this->pembayaran()->sum("nominal_tagihan") ?? 0;
         }
         if($pelanggan_id && $this->tipe_tagihan == TipeTagihanEnum::BULANAN) {
-            $pelanggan = Pelanggan::find($pelanggan_id);
+            // $pelanggan = Pelanggan::find($pelanggan_id);
             $pembayaran = $this->pembayaran()->where("pelanggan_id", $pelanggan_id)->first();
-            $tagihan = $pelanggan->profil->secret->paket->harga?->harga;
-            $terbayar = $pembayaran->nominal_tagihan ?? 0;
+            if($pembayaran){
+                return true;
+            }
+            // $tagihan = $pelanggan->profil->secret->paket->harga?->harga;
+            // $terbayar = $pembayaran->nominal_tagihan ?? 0;
         }
         return (float)$tagihan <= (float)$terbayar;
         // return $this->hasOne(PembayaranPelanggan::class);

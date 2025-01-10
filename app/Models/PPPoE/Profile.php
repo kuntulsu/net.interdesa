@@ -2,10 +2,11 @@
 
 namespace App\Models\PPPoE;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Http;
 use Sushi\Sushi;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Database\Eloquent\Model;
+use Filament\Notifications\Notification;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Profile extends Model
 {
@@ -14,7 +15,7 @@ class Profile extends Model
     protected $guarded = [];
     protected function sushiShouldCache()
     {
-        return true;
+        return false;
     }
     public function getRows(): array
     {
@@ -35,8 +36,14 @@ class Profile extends Model
                 }
                 return $profiles;
             }
-        } catch (\Exception $e) {
-            dd($e);
+        }catch(\Illuminate\Http\Client\ConnectionException $e){
+            Notification::make("connection-failure")
+                ->title("Connection Failure")
+                ->body($e->getMessage())
+                ->persistent()
+                ->danger()
+                ->send();
+            return [];
         }
     }
     public function harga()

@@ -2,9 +2,10 @@
 
 namespace App\Models\PPPoE;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Http;
 use Sushi\Sushi;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Database\Eloquent\Model;
+use Filament\Notifications\Notification;
 
 class Active extends Model
 {
@@ -47,8 +48,14 @@ class Active extends Model
                 array_push($actives, $filtered);
             }
             return $actives;
-        } catch (\Exception $e) {
-            dd($e);
+        }catch(\Illuminate\Http\Client\ConnectionException $e){
+            Notification::make("connection-failure")
+                ->title("Connection Failure")
+                ->body($e->getMessage())
+                ->persistent()
+                ->danger()
+                ->send();
+            return [];
         }
     }
 

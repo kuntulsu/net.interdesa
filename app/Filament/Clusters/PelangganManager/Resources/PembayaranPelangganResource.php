@@ -5,6 +5,7 @@ namespace App\Filament\Clusters\PelangganManager\Resources;
 use Filament\Forms;
 use App\Models\User;
 use Filament\Tables;
+use App\Models\Tagihan;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
@@ -16,6 +17,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Clusters\PelangganManager;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Pages\Dashboard\Concerns\HasFiltersForm;
 use App\Filament\Clusters\PelangganManager\Resources\PembayaranPelangganResource\Pages;
 use App\Filament\Clusters\PelangganManager\Resources\PembayaranPelangganResource\RelationManagers;
 use App\Filament\Clusters\PelangganManager\Resources\PembayaranPelangganResource\Widgets\PaymentPerUserOverview;
@@ -72,6 +74,9 @@ class PembayaranPelangganResource extends Resource
                 SelectFilter::make('user_id')
                     ->label("Operator")
                     ->options(fn (): array => User::query()->pluck('name', 'id')->all()),
+                SelectFilter::make("tagihan_id")
+                    ->label("Nama Tagihan")
+                    ->options(fn (): array => Tagihan::where("tipe_tagihan", \App\TipeTagihanEnum::to("BULANAN"))->get()->pluck("name", "id")->toArray()),
                 Filter::make('created_at')
                     ->form([
                         DatePicker::make('created_from'),

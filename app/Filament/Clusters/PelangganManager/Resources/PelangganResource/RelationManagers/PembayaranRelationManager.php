@@ -88,6 +88,9 @@ class PembayaranRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make("tipe_tagihan"),
                 Tables\Columns\TextColumn::make("nominal_tagihan")
                     ->getStateUsing(function(Tagihan $record){
+                        $terbayar = PembayaranPelanggan::where("tagihan_id", $record->id)
+                            ->where("pelanggan_id", $this->ownerRecord->id)
+                            ->first();
                         $this->lunas = $record->lunas(
                             ($record->tipe_tagihan == TipeTagihanEnum::BULANAN) 
                                 ? $this->ownerRecord->id 
@@ -103,7 +106,7 @@ class PembayaranRelationManager extends RelationManager
                                     ->where("pelanggan_id", $pelanggan->id)
                                     ->sum("nominal_tagihan");
                             }
-                            return $tagihan;
+                            return $terbayar?->nominal_tagihan ?? $tagihan;
                         }
                         return $record->nominal_tagihan;
                     })
@@ -157,7 +160,36 @@ class PembayaranRelationManager extends RelationManager
                 Action::make("bayar")
                     ->modalSubmitAction(fn (StaticAction $action) => $action->label('Bayar Tagihan'))
                     ->hidden(fn() => $this->lunas)
-                    ->action(function($record) {
+                    ->form([
+                        TextInput::make("nama_pelanggan")
+                            ->label("Nama Pelanggan")
+                            ->readOnly()
+                            ->default(fn() => $this->ownerRecord->nama),
+                        TextInput::make("alamat_pelanggan")
+                            ->label("Alamat Pelanggan")
+                            ->readOnly()
+                            ->default(fn() => $this->ownerRecord->alamat),
+                        TextInput::make("paket")
+                            ->readOnly()
+                            ->default(fn($record) => $this->ownerRecord->profil->secret->profile)
+                            ->hidden(fn($record) => ($record->tipe_tagihan != TipeTagihanEnum::BULANAN)),
+                        TextInput::make("tipe_tagihan")->readOnly(),
+                        TextInput::make("nominal_tagihan")
+                            // ->formatState("hello")
+                            ->default(function ($record) {
+                                if($record->tipe_tagihan == TipeTagihanEnum::BULANAN){
+                                    $pelanggan = $this->ownerRecord;
+                                    $tagihan = $pelanggan->profil->secret->paket->harga?->harga;
+                                    return $tagihan;
+                                }
+                                return $record->nominal_tagihan;
+                            }),
+                        TextInput::make("Operator")
+                            ->readOnly()
+                            ->default(fn() => auth()->user()->name)
+                        ])
+                    ->action(function($record, $data) {
+
                         if($record->tipe_tagihan == TipeTagihanEnum::BULANAN){
                             $pelanggan = $this->ownerRecord;
                             $tagihan = $pelanggan->profil->secret->paket->harga?->harga;
@@ -168,7 +200,7 @@ class PembayaranRelationManager extends RelationManager
                         $pembayaran = $record->pembayaran()->create([
                             "pelanggan_id" => $this->ownerRecord->id,
                             "user_id" => auth()->user()->id,
-                            "nominal_tagihan" => $tagihan
+                            "nominal_tagihan" => $data['nominal_tagihan'] ?? $tagihan
                         ]);
 
                         if($pembayaran) {
@@ -179,40 +211,13 @@ class PembayaranRelationManager extends RelationManager
                         }
 
                     })
-                    ->infolist([
-                        Section::make()
-                            ->columns(2)
-                            ->schema([
-                                TextEntry::make("nama_pelanggan")
-                                    ->label("Nama Pelanggan")
-                                    ->default(fn() => $this->ownerRecord->nama),
-                                TextEntry::make("alamat_pelanggan")
-                                    ->label("Alamat Pelanggan")
-                                    ->default(fn() => $this->ownerRecord->alamat),
-                                TextEntry::make("paket")
-                                    ->default(fn($record) => $this->ownerRecord->profil->secret->profile)
-                                    ->hidden(fn($record) => ($record->tipe_tagihan != TipeTagihanEnum::BULANAN)),
-                                TextEntry::make("tipe_tagihan"),
-                                TextEntry::make("nominal tagihan")
-                                    // ->formatState("hello")
-                                    ->default(function ($record) {
-                                        if($record->tipe_tagihan == TipeTagihanEnum::BULANAN){
-                                            $pelanggan = $this->ownerRecord;
-                                            $tagihan = $pelanggan->profil->secret->paket->harga?->harga;
-                                            return $tagihan;
-                                        }
-                                        return $record->nominal_tagihan;
-                                    })
-                                    ->color("success")
-                                    ->money("IDR"),
-                                TextEntry::make("Operator")
-                                    ->default(fn() => auth()->user()->name)
-                            ]),
+                    // ->infolist([
                         
                         
                         
-                    ])
-
+                        
+                    // ])
+                    
                     ->icon("heroicon-o-banknotes")
                     ->button(),
                 // Tables\Actions\EditAction::make(),

@@ -15,10 +15,15 @@ class SystemResource extends BaseWidget
     public $mem_usage_history = [];
     public $traffic_usage_history = [];
     // protected int | string | array $columnSpan = 2;
-
+    protected static ?string $pollingInterval = "null";
+    protected static bool $isLazy = false;
+    protected static string $title = "System Resources";
     protected function getStats(): array
     {
-
+        // dd(\App\Helpers\Helper::server_checkup());
+        if (! \App\Helpers\Helper::server_checkup()){
+            return [view('livewire.server-info')];
+        }
         $resource = Resource::first();
         $monitoring = Monitoring::monitor("ether1");
         $cpu_usage = $resource['cpu-load'];

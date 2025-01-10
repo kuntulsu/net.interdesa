@@ -26,6 +26,8 @@ use App\TipeTransaksi;
 
 class TransaksiResource extends Resource
 {
+    // use \BezhanSalleh\FilamentShield\Traits\HasPageShield;
+
     protected static ?string $model = Transaksi::class;
 
     protected static ?string $navigationIcon = "heroicon-o-arrows-up-down";

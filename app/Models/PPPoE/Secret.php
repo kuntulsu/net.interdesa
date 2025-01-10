@@ -6,6 +6,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Database\Eloquent\Model;
+use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Secret extends Model
@@ -45,7 +46,7 @@ class Secret extends Model
 
     protected function sushiShouldCache()
     {
-        return true;
+        return false;
     }
     public function getRows()
     {
@@ -56,8 +57,14 @@ class Secret extends Model
             $data = $response->collect();
 
             return $this->toSchema($data);
-        } catch (\Exception $e) {
-            dd($e);
+        }catch(\Illuminate\Http\Client\ConnectionException $e){
+            Notification::make("connection-failure")
+                ->title("Connection Failure")
+                ->body($e->getMessage())
+                ->persistent()
+                ->danger()
+                ->send();
+            return [];
         }
     }
     public function profil(): HasOne
@@ -105,7 +112,7 @@ class Secret extends Model
                 "password" => $secret->password,
             ];
 
-            if (isset($data["profile"])) {
+            if (isset($secret["profile"])) {
                 $data["profile"] = $secret->profile;
             }
 
@@ -116,10 +123,10 @@ class Secret extends Model
                 $data["local-address"] = $secret["local-address"];
                 $data["remote-address"] = $secret["remote-address"];
             }
-
             $response = Http::routeros()
                 ->put("/ppp/secret", $data)
                 ->json();
+
             $secret->id = $response[".id"];
             // \App\Models\ProfilPelanggan::create([
             //     "pelanggan_id" => $secret["pelanggan_id"],

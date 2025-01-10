@@ -26,7 +26,7 @@ class PelangganRelationManager extends RelationManager
                 //     ->required()
                 //     ->maxLength(255),
                 Select::make("pelanggan_id")
-                    ->options(Pelanggan::whereDoesntHave("odp")->get()->pluck("nama", "id"))
+                    ->options(Pelanggan::selectRaw("id, CONCAT(nama, ' - ', alamat) as nama")->whereDoesntHave("odp")->pluck("nama", "id"))
                     ->searchable()
                     ->label("Link Pelanggan")
                     ->native(false)

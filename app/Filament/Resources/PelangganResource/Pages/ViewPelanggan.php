@@ -14,31 +14,22 @@ use Filament\Infolists\Components\Actions;
 use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\TextEntry;
 use App\Filament\Resources\PelangganResource;
+use App\Helpers\Helper;
+use App\Models\System\Resource;
 use Filament\Infolists\Components\Actions\Action;
 use Illuminate\Support\Facades\Log;
+use Filament\Infolists\Components\ViewEntry;
 class ViewPelanggan extends ViewRecord
 {
     protected static string $resource = PelangganResource::class;
     protected static ?string $title = "Lihat Pelanggan";
 
-    public function infolist(Infolist $infolist): Infolist
+    public function informasi_teknis()
     {
-        $secret = $this->getRecord()->profil->secret;
-        return $infolist->schema([
-            Section::make("Informasi Pribadi")
-                ->columns(2)
-                ->description(
-                    "Informasi Pribadi Pelanggan Internet Desa Pecangaan Kulon"
-                )
-                ->schema([
-                    TextEntry::make("nama"),
-                    TextEntry::make("alamat"),
-                    TextEntry::make("telp")->prefix("+62"),
-                    TextEntry::make("jatuh_tempo")->date("d F Y"),
-                ])
-                ->collapsible(),
+        if(Helper::server_checkup()) {
+            $secret = $this->getRecord()->profil->secret;
 
-            Section::make("Informasi Teknis")
+            return Section::make("Informasi Teknis")
                 ->columns(2)
                 ->description("Informasi Teknis Pelanggan (Server Side)")
                 ->schema([
@@ -121,7 +112,29 @@ class ViewPelanggan extends ViewRecord
                         return $secret->service;
                     })->label("Tipe Layanan"),
                 ])
+                ->collapsible();
+        }else{
+            return ViewEntry::make('status')
+                ->view("livewire.server-info");
+        }
+    }
+    public function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist->schema([
+            Section::make("Informasi Pribadi")
+                ->columns(2)
+                ->description(
+                    "Informasi Pribadi Pelanggan Internet Desa Pecangaan Kulon"
+                )
+                ->schema([
+                    TextEntry::make("nama"),
+                    TextEntry::make("alamat"),
+                    TextEntry::make("telp")->prefix("+62"),
+                    TextEntry::make("jatuh_tempo")->date("d F Y"),
+                ])
                 ->collapsible(),
+
+            $this->informasi_teknis()
         ]);
     }
 }

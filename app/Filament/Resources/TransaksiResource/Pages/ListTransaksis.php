@@ -8,6 +8,8 @@ use Filament\Resources\Pages\ListRecords;
 
 class ListTransaksis extends ListRecords
 {
+    // use \BezhanSalleh\FilamentShield\Traits\HasPageShield;
+
     protected static string $resource = TransaksiResource::class;
 
     protected function getHeaderActions(): array

@@ -4,6 +4,7 @@ namespace App\Filament\Resources\PelangganResource\Pages;
 
 use Filament\Actions;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\Model;
 use Filament\Resources\Pages\CreateRecord;
 use App\Filament\Resources\PelangganResource;
@@ -47,7 +48,7 @@ class CreatePelanggan extends CreateRecord
                     "secret_id" => $data["secret_id"],
                 ]);
             }
-
+            Log::debug($pelanggan);
             return $pelanggan;
         });
         return $pelanggan;
