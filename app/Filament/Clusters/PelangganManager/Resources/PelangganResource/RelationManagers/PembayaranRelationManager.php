@@ -99,7 +99,6 @@ class PembayaranRelationManager extends RelationManager
                         if($record->tipe_tagihan == TipeTagihanEnum::BULANAN){
                             $pelanggan = $this->ownerRecord;
                             $tagihan = $pelanggan->profil->secret->paket->harga?->harga;
-                            
                             if($this->lunas){ 
                                 // tampilkan harga yang sudah terbayar untuk menghindari perubahan profile/paket pelanggan
                                 return $record->pembayaran()

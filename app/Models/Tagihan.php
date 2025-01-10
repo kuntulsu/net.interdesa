@@ -32,6 +32,8 @@ class Tagihan extends Model
             $pembayaran = $this->pembayaran()->where("pelanggan_id", $pelanggan_id)->first();
             if($pembayaran){
                 return true;
+            }else{
+                return false;
             }
             // $tagihan = $pelanggan->profil->secret->paket->harga?->harga;
             // $terbayar = $pembayaran->nominal_tagihan ?? 0;
