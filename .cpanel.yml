@@ -15,6 +15,7 @@ deployment:
     - /bin/cp -R -f artisan $DEPLOYPATH
     - /bin/cp -R -f composer.json $DEPLOYPATH
     - /bin/cp -R -f composer.lock $DEPLOYPATH
+    - cd $DEPLOYPATH && $php83 $DEPLOYPATH/composer.phar install --no-dev
     - $php83 $DEPLOYPATH/artisan migrate
     - $php83 $DEPLOYPATH/artisan filament:optimize-clear
     - $php83 $DEPLOYPATH/artisan filament:optimize
