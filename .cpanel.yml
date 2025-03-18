@@ -3,7 +3,7 @@ deployment:
   tasks:
     - export DEPLOYPATH=~/public_html/net.interdesa
     - export php83=/opt/alt/php83/usr/bin/php
-    - export npm=/opt/alt/alt-nodejs22/root/usr/lib/node_modules/npm
+    - export npm=/opt/alt/alt-nodejs22/root/bin/npm
     - /bin/cp -R -f app $DEPLOYPATH
     - /bin/cp -R -f bootstrap $DEPLOYPATH
     - /bin/cp -R -f config $DEPLOYPATH
