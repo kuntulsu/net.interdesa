@@ -16,6 +16,7 @@ deployment:
     - /bin/cp -R -f artisan $DEPLOYPATH
     - /bin/cp -R -f composer.json $DEPLOYPATH
     - /bin/cp -R -f composer.lock $DEPLOYPATH
+    - $npm install --prefix=$DEPLOYPATH
     - $npm run build --prefix=$DEPLOYPATH
     - $php83 $DEPLOYPATH/artisan migrate
     - $php83 $DEPLOYPATH/artisan filament:optimize-clear
