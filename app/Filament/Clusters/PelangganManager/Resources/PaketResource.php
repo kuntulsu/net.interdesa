@@ -24,7 +24,9 @@ class PaketResource extends Resource
 
     protected static ?string $navigationIcon = "heroicon-o-cube";
 
-    protected static ?string $cluster = PelangganManager::class;
+    // protected static ?string $cluster = PelangganManager::class;
+    protected static ?string $navigationGroup = 'Pelanggan Manager';
+
 
     public static function form(Form $form): Form
     {

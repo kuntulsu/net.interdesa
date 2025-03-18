@@ -65,6 +65,14 @@ class Secret extends Model
                 ->danger()
                 ->send();
             return [];
+        }catch(\Exception $e){
+            Notification::make("connection-failure")
+                ->title("Connection Failure")
+                ->body($e->getMessage())
+                ->persistent()
+                ->danger()
+                ->send();
+            return [];
         }
     }
     public function profil(): HasOne
@@ -103,7 +111,30 @@ class Secret extends Model
             return false;
         }
     }
-    
+
+    public static function isolir()
+    {
+        $tagihan = \App\Models\Tagihan::latest()->first();
+        $data = \App\Models\Pelanggan::whereDoesntHave("pembayaran", function ($query) use ($tagihan) {
+                $query->where("tagihan_id", $tagihan->id);
+            })
+            ->NotWhitelist()
+            ->with("profil.secret")->get();
+        $secret_ids = $data->pluck("profil.secret.id");
+        return self::massDisableSecret($secret_ids);
+    }
+    public static function massDisableSecret(Collection $secret_ids)
+    {
+        $ids = $secret_ids->join(",");
+        $response = Http::routeros()->post("/ppp/secret/disable", [
+            ".id" => $ids
+        ]);
+        if($response->ok()){
+            return true;
+        }else{
+            return false;
+        }
+    }
     protected static function booted(): void
     {
         static::created(function (Secret $secret) {

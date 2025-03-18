@@ -2,20 +2,23 @@
 
 namespace App\Filament\Clusters\PelangganManager\Resources\PelangganResource\RelationManagers;
 
-use App\Models\Pelanggan;
-use App\Models\PembayaranPelanggan;
+use Dom\Text;
 use Filament\Forms;
 use Filament\Tables;
 use App\Models\Tagihan;
+use Filament\Forms\Set;
 use App\TipeTagihanEnum;
 use Filament\Forms\Form;
+use App\Models\Pelanggan;
 use Filament\Tables\Table;
 use Filament\Actions\StaticAction;
+use App\Models\PembayaranPelanggan;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Model;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\ViewField;
 use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Infolists\Components\Section;
@@ -32,59 +35,58 @@ class PembayaranRelationManager extends RelationManager
     {
         return false;
     }
-    public function form(Form $form): Form
-    {
-        return $form->schema([
-            Forms\Components\Select::make("tagihan_id")
-                ->label("Nama Tagihan")
-                // ->native(false)
-                ->required()
-                ->options(function () {
-                    return Tagihan::whereDoesntHave("terbayar", function (
-                        $query
-                    ) {
-                        $query->where("pelanggan_id", $this->ownerRecord->id);
-                    })
-                        ->get()
-                        ->pluck("name", "id");
-                }),
-            Forms\Components\TextInput::make("nama_paket")
-                ->readOnly()
-                ->default(function () {
-                    $secret = $this->ownerRecord->profil->secret;
-                    $paket = \App\Models\PPPoE\Profile::where(
-                        "name",
-                        $secret->profile
-                    )->first();
-                    return $secret->profile;
-                }),
-            Forms\Components\TextInput::make("nominal_tagihan")->default(
-                function () {
-                    $secret = $this->ownerRecord->profil->secret;
-                    $paket = \App\Models\PPPoE\Profile::where(
-                        "name",
-                        $secret->profile
-                    )->first();
-                    return $paket->harga->harga ?? 0;
-                }
-            ),
-            Forms\Components\TextInput::make("user.name")
-                ->label("Operator")
-                ->readOnly()
-                ->default(fn() => auth()->user()->name),
-        ]);
-    }
+    // public function form(Form $form): Form
+    // {
+    //     return $form->schema([
+    //         Forms\Components\Select::make("tagihan_id")
+    //             ->label("Nama Tagihan")
+    //             // ->native(false)
+    //             ->required()
+    //             ->options(function () {
+    //                 return Tagihan::whereDoesntHave("terbayar", function (
+    //                     $query
+    //                 ) {
+    //                     $query->where("pelanggan_id", $this->ownerRecord->id);
+    //                 })
+    //                     ->get()
+    //                     ->pluck("name", "id");
+    //             }),
+    //         Forms\Components\TextInput::make("nama_paket")
+    //             ->readOnly()
+    //             ->default(function () {
+    //                 $secret = $this->ownerRecord->profil->secret;
+    //                 $paket = \App\Models\PPPoE\Profile::where(
+    //                     "name",
+    //                     $secret->profile
+    //                 )->first();
+    //                 return $secret->profile;
+    //             }),
+    //         Forms\Components\TextInput::make("nominal_tagihan")->default(
+    //             function () {
+    //                 $secret = $this->ownerRecord->profil->secret;
+    //                 $paket = \App\Models\PPPoE\Profile::where(
+    //                     "name",
+    //                     $secret->profile
+    //                 )->first();
+    //                 return $paket->harga->harga ?? 0;
+    //             }
+    //         ),
+    //         Forms\Components\TextInput::make("user.name")
+    //             ->label("Operator")
+    //             ->readOnly()
+    //             ->default(fn() => auth()->user()->name),
+    //     ]);
+    // }
 
     public function table(Table $table): Table
     {
-
         return $table
             ->modifyQueryUsing(function (Builder $query){
                 return $query->orWhere("tipe_tagihan", TipeTagihanEnum::BULANAN);
             })
 
             ->columns([
-                Tables\Columns\TextColumn::make("name")->searchable(),
+                Tables\Columns\TextColumn::make("name"),
                 Tables\Columns\TextColumn::make("tipe_tagihan"),
                 Tables\Columns\TextColumn::make("nominal_tagihan")
                     ->getStateUsing(function(Tagihan $record){
@@ -157,66 +159,71 @@ class PembayaranRelationManager extends RelationManager
  
             ->actions([
                 Action::make("bayar")
-                    ->modalSubmitAction(fn (StaticAction $action) => $action->label('Bayar Tagihan'))
+                    // ->modalSubmitAction(fn (StaticAction $action) => $action->label('Bayar Tagihan'))
                     ->hidden(fn() => $this->lunas)
-                    ->form([
-                        TextInput::make("nama_pelanggan")
-                            ->label("Nama Pelanggan")
-                            ->readOnly()
-                            ->default(fn() => $this->ownerRecord->nama),
-                        TextInput::make("alamat_pelanggan")
-                            ->label("Alamat Pelanggan")
-                            ->readOnly()
-                            ->default(fn() => $this->ownerRecord->alamat),
-                        TextInput::make("paket")
-                            ->readOnly()
-                            ->default(fn($record) => $this->ownerRecord->profil->secret->profile)
-                            ->hidden(fn($record) => ($record->tipe_tagihan != TipeTagihanEnum::BULANAN)),
-                        TextInput::make("tipe_tagihan")->readOnly(),
-                        TextInput::make("nominal_tagihan")
-                            // ->formatState("hello")
-                            ->default(function ($record) {
-                                if($record->tipe_tagihan == TipeTagihanEnum::BULANAN){
-                                    $pelanggan = $this->ownerRecord;
-                                    $tagihan = $pelanggan->profil->secret->paket->harga?->harga;
-                                    return $tagihan;
-                                }
-                                return $record->nominal_tagihan;
-                            }),
-                        TextInput::make("Operator")
-                            ->readOnly()
-                            ->default(fn() => auth()->user()->name)
-                        ])
-                    ->action(function($record, $data) {
 
-                        if($record->tipe_tagihan == TipeTagihanEnum::BULANAN){
-                            $pelanggan = $this->ownerRecord;
-                            $tagihan = $pelanggan->profil->secret->paket->harga?->harga;
-                        }else{
-                            $tagihan = $record->nominal_tagihan;
-                        }
-                        
-                        $pembayaran = $record->pembayaran()->create([
-                            "pelanggan_id" => $this->ownerRecord->id,
-                            "user_id" => auth()->user()->id,
-                            "nominal_tagihan" => $data['nominal_tagihan'] ?? $tagihan
-                        ]);
-
-                        if($pembayaran) {
-                            Notification::make("payment_success")
-                                ->success()
-                                ->title("Pembayaran Berhasil")
-                                ->send();
-                        }
-
-                    })
-                    // ->infolist([
-                        
-                        
-                        
-                        
+                    ->modalContent(fn ($action, $record) => view("components.payment-dialog", ['action' => $action, 'record' => $record]))
+                    // ->form([
+                    //     TextInput::make("nama_pelanggan")
+                    //         ->label("Nama Pelanggan")
+                    //         ->readOnly()
+                    //         ->default(fn() => $this->ownerRecord->nama),
+                    //     TextInput::make("alamat_pelanggan")
+                    //         ->label("Alamat Pelanggan")
+                    //         ->readOnly()
+                    //         ->default(fn() => $this->ownerRecord->alamat),
+                    //     TextInput::make("payment_method")
+                    //         ->default("hello")
+                    //         ->hidden(),
+                    //     TextInput::make("paket")
+                    //         ->readOnly()
+                    //         ->default(fn($record) => $this->ownerRecord->profil->secret->profile)
+                    //         ->hidden(fn($record) => ($record->tipe_tagihan != TipeTagihanEnum::BULANAN)),
+                    //     TextInput::make("tipe_tagihan")->readOnly(),
+                    //     TextInput::make("nominal_tagihan")
+                    //         // ->formatState("hello")
+                    //         ->default(function ($record) {
+                    //             if($record->tipe_tagihan == TipeTagihanEnum::BULANAN){
+                    //                 $pelanggan = $this->ownerRecord;
+                    //                 $tagihan = $pelanggan->profil->secret->paket->harga?->harga;
+                    //                 return $tagihan;
+                    //             }
+                    //             return $record->nominal_tagihan;
+                    //         }),
+                    //     TextInput::make("Operator")
+                    //         ->readOnly()
+                    //         ->default(fn() => auth()->user()->name)
                     // ])
-                    
+                    // ->action(function($record, $data) {
+                    //     dd($data);
+                    //     if($record->tipe_tagihan == TipeTagihanEnum::BULANAN){
+                    //         $pelanggan = $this->ownerRecord;
+                    //         $tagihan = $pelanggan->profil->secret->paket->harga?->harga;
+                    //     }else{
+                    //         $tagihan = $record->nominal_tagihan;
+                    //     }
+                        
+                    //     $pembayaran = $record->pembayaran()->create([
+                    //         "pelanggan_id" => $this->ownerRecord->id,
+                    //         "user_id" => auth()->user()->id,
+                    //         "nominal_tagihan" => $data['nominal_tagihan'] ?? $tagihan
+                    //     ]);
+
+                    //     if($pembayaran) {
+                    //         Notification::make("payment_success")
+                    //             ->success()
+                    //             ->title("Pembayaran Berhasil")
+                    //             ->send();
+                    //     }
+
+                    // })
+                    // ->infolist([
+                    //     TextEntry::make("nama_pelanggan")
+                    //         ->label("Nama Pelanggan")
+                    //         ->default(fn() => $this->ownerRecord->nama),
+                    // ])
+                    ->modalSubmitAction(false)
+                    ->modalCancelAction(false)
                     ->icon("heroicon-o-banknotes")
                     ->button(),
                 // Tables\Actions\EditAction::make(),

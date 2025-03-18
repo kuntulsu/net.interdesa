@@ -28,7 +28,9 @@ class TagihanResource extends Resource
 
     protected static ?string $navigationIcon = "heroicon-o-clipboard-document-list";
 
-    protected static ?string $cluster = PelangganManager::class;
+    // protected static ?string $cluster = PelangganManager::class;
+    protected static ?string $navigationGroup = 'Pelanggan Manager';
+
 
     public static function form(Form $form): Form
     {

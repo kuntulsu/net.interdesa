@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Casts\PaymentMethod;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -35,7 +36,8 @@ class PembayaranPelanggan extends Model
     protected function casts(): array
     {
         return [
-            "nominal_tagihan" => "decimal:2"
+            "nominal_tagihan" => "decimal:2",
+            "payment_method" => PaymentMethod::class
         ];
     }
 }

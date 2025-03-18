@@ -31,7 +31,7 @@ class TransaksiResource extends Resource
     protected static ?string $model = Transaksi::class;
 
     protected static ?string $navigationIcon = "heroicon-o-arrows-up-down";
-
+    protected static ?int $navigationSort = 3;
     public static function form(Form $form): Form
     {
         return $form->columns(2)->schema([

@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="utf-8" />
 		<title>INV#{{ $pembayaran->id }}</title>
-
+		<link rel="stylesheet" href="http://127.0.0.1:5173/resources/css/app.css" data-navigate-track="reload" />
 		<style>
 			.invoice-box {
 				max-width: 800px;

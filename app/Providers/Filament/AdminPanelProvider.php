@@ -22,17 +22,17 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
-
+use Illuminate\Support\Facades\Vite;
 class AdminPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
+
         return $panel
             ->default()
             ->id("admin")
             ->path("admin")
             ->login()
-            ->spa()
             ->brandName('Interdesa Pecangaan')
             ->brandLogo(asset("interdesa.png"))
             ->renderHook(
@@ -40,7 +40,7 @@ class AdminPanelProvider extends PanelProvider
                 fn (): string => \Illuminate\Support\Facades\Blade::render('@livewire(\App\Livewire\ServerIndicator::class)'),
             )
             ->assets([
-                Css::make("my-stylesheet", resource_path("css/app.css"))
+                Css::make("my-stylesheet", Vite::asset("resources/css/app.css"))
             ])
             ->colors([
                 "primary" => Color::Blue,

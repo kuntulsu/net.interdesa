@@ -2,10 +2,11 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 class Pelanggan extends Model
 {
@@ -27,6 +28,14 @@ class Pelanggan extends Model
             "id",
             "secret_id"
         );
+    }
+    public function scopeNotWhitelist(Builder $query): void
+    {
+        $query->where("whitelist", false);
+    }
+    public function odp_pelanggan(): HasManyThrough
+    {
+        return $this->hasManyThrough(Pelanggan::class, ODP::class);
     }
     public function odp(): HasOne
     {
@@ -62,6 +71,7 @@ class Pelanggan extends Model
     {
         return [
             "telp" => \App\Casts\Telp::class,
+            "whitelist" => "boolean"
         ];
     }
 }

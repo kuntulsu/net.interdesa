@@ -20,7 +20,11 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Http::macro('routeros', function () {
-            return Http::withBasicAuth(config("routeros.username"), config("routeros.password"))->baseUrl('http://'.config("routeros.host").":".config("routeros.port")."/rest");
+            return Http::withHeaders([
+                    'Content-Type' => 'application/json'
+                ])
+                ->timeout(5)
+                ->withBasicAuth(config("routeros.username"), config("routeros.password"))->baseUrl('http://'.config("routeros.host").":".config("routeros.port")."/rest");
         });
     }
 }

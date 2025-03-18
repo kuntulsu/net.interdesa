@@ -18,7 +18,7 @@ enum TipeTagihanEnum: string
         return $cases;
     }
 
-    public static function to(string $to): self
+    public static function to(string $to)
     {
         foreach (self::cases() as $case) {
             if ($case->name === $to) {

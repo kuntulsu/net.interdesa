@@ -15,7 +15,6 @@ class PaymentPerUserOverview extends BaseWidget
 {
     protected static ?string $pollingInterval = null;
     protected static bool $isLazy = false;
-    use InteractsWithTable;
 
     protected function getStats(): array
     {

@@ -24,7 +24,9 @@ class ODPResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
     protected static ?string $slug = "odp";
-    protected static ?string $cluster = PelangganManager::class;
+    // protected static ?string $cluster = PelangganManager::class;
+    protected static ?string $navigationGroup = 'Pelanggan Manager';
+
 
     public static function form(Form $form): Form
     {

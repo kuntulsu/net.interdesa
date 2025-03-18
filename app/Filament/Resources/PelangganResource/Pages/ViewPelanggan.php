@@ -118,15 +118,67 @@ class ViewPelanggan extends ViewRecord
                 ->view("livewire.server-info");
         }
     }
+
     public function infolist(Infolist $infolist): Infolist
     {
         return $infolist->schema([
+            
             Section::make("Informasi Pribadi")
                 ->columns(2)
                 ->description(
                     "Informasi Pribadi Pelanggan Internet Desa Pecangaan Kulon"
                 )
                 ->schema([
+                    ViewEntry::make('testing')
+                        ->hidden(fn($record) => !$record->whitelist)
+                        ->columnSpanFull()
+                        ->view("livewire.is-whitelisted"),
+                    Actions::make([
+                        Action::make("whitelist pelanggan")
+                            ->hidden(fn($record) => $record->whitelist)
+                            ->label("Whitelist Pelanggan")
+                            ->color("success")
+                            ->icon("heroicon-o-arrow-path")
+                            ->requiresConfirmation(function ($action) {
+                                $action->modalDescription(
+                                    "Akan Whitelist Pelanggan dan Pelanggan Tidak Akan Terkena Isolir pada saat waktu Pengisoliran"
+                                );
+
+                                return $action;
+                            })
+                            ->action(function ($record) {
+                                $record->whitelist = true;
+                                $record->save();
+
+                                Notification::make()
+                                    ->title("Pelanggan Berhasil ter-whitelist")
+
+                                    ->success() // Sets the notification type to success
+                                    ->send(); // Sends the notification
+                        }),
+                        Action::make("unwhitelist pelanggan")
+                            ->hidden(fn($record) => !$record->whitelist)
+                            ->label("un-Whitelist Pelanggan")
+                            ->color("warning")
+                            ->icon("heroicon-o-arrow-path")
+                            ->requiresConfirmation(function ($action) {
+                                $action->modalDescription(
+                                    "Akan Menghapus Whitelist Pelanggan dan Pelanggan Akan Terkena Isolir pada saat waktu Pengisoliran"
+                                );
+
+                                return $action;
+                            })
+                            ->action(function ($record) {
+                                $record->whitelist = false;
+                                $record->save();
+
+                                Notification::make()
+                                    ->title("Pelanggan Berhasil di-unwhitelist")
+
+                                    ->success() // Sets the notification type to success
+                                    ->send(); // Sends the notification
+                        }),
+                    ]),
                     TextEntry::make("nama"),
                     TextEntry::make("alamat"),
                     TextEntry::make("telp")->prefix("+62"),

@@ -1,8 +1,9 @@
 <?php
 
+use App\Models\Tagihan;
 use App\Models\Pelanggan;
 use App\Models\PembayaranPelanggan;
-use App\Models\Tagihan;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 
 Route::get("/", function () {
@@ -31,8 +32,16 @@ Route::get("/invoice/{pembayaran}", function(PembayaranPelanggan $pembayaran) {
     return view("invoice", [
         "pembayaran" => $pembayaran
     ]);
-})->name("invoice");
+})
+->middleware("auth")
+->name("invoice");
 
 Route::get("promo-akhir-tahun", function (){
     return redirect("https://api.whatsapp.com/send/?phone=6285157180664");
+});
+Route::any("add", function (){
+    return response("ok");
+})->middleware("api");
+Route::any("ping", function(){
+    return response("pong")->header("Content-Type", "text/plain");
 });

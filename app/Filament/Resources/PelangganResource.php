@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Clusters\PelangganManager\Resources\PelangganResource\RelationManagers\OdpRelationManager;
 use Filament\Forms;
 use Filament\Tables;
 use Filament\Forms\Form;
@@ -31,11 +32,12 @@ class PelangganResource extends Resource
 {
     protected static ?string $model = Pelanggan::class;
     protected static SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Start;
-    protected static ?string $cluster = \App\Filament\Clusters\PelangganManager::class;
+    // protected static ?string $cluster = \App\Filament\Clusters\PelangganManager::class;
     // protected static ?string $recordTitleAttribute = "pelanggan";
 
     protected static ?string $slug = "pelanggan";
     protected static ?string $navigationIcon = "heroicon-o-user-group";
+    protected static ?string $navigationGroup = 'Pelanggan Manager';
 
     public static function form(Form $form): Form
     {
@@ -177,6 +179,11 @@ class PelangganResource extends Resource
             //         $query->with("secret");
             //     }]);
             // })
+            ->recordClasses(fn(Pelanggan $record) => match($record->whitelist){
+                true => "dark:bg-indigo-900 dark:text-white bg-indigo-200 text-indigo-900",
+                false => null,
+                default => null
+            })
             ->columns([
 
                 TextColumn::make("nama")->searchable(),
@@ -214,6 +221,7 @@ class PelangganResource extends Resource
     {
         return [
             PembayaranRelationManager::class,
+            OdpRelationManager::class,
         ];
     }
 

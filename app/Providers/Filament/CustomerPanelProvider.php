@@ -29,6 +29,7 @@ class CustomerPanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::Red,
             ])
+            
             ->brandName('Interdesa Pecangaan')
             ->brandLogo(asset("interdesa.png"))
             ->discoverResources(in: app_path('Filament/Customer/Resources'), for: 'App\\Filament\\Customer\\Resources')
