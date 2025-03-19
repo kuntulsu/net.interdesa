@@ -16,7 +16,6 @@ class ClientMonitor extends BaseWidget
     public Secret $secret;
     public array $downloadHistory = [];
     public array $uploadHistory = [];
-    public array $latencyHistory = [];
     protected function getStats(): array
     {
         // tx = download
@@ -31,7 +30,7 @@ class ClientMonitor extends BaseWidget
             ];
         }
         $monitoring = Monitoring::monitor($this->secret->findInterface());
-        $ping = Monitoring::ping("10.10.9.243");
+        $ping = Monitoring::ping($this->secret->active?->address);
         // dd([$monitoring, $ping]);
 
         $downloadTraffic = $monitoring[0]['tx-bits-per-second'] / 1024 / 1024;
@@ -42,8 +41,7 @@ class ClientMonitor extends BaseWidget
         $uploadTraffic = Number::format($uploadTraffic, 2);
         array_push($this->uploadHistory, $uploadTraffic);
 
-        $latencies = $ping[0]['time'];
-        array_push($this->latencyHistory, $latencies);
+        $latencies = $ping[0]['time'] ?? $ping[0]['status'];
         return [
             Stat::make("Download", "{$downloadTraffic} Mbps")
                 ->description("{$this->secret->name}")
@@ -59,7 +57,6 @@ class ClientMonitor extends BaseWidget
                 ->description("Host: {$ping[0]['host']}")
                 ->color("info")
                 ->icon("heroicon-o-arrows-up-down")
-                ->chart($this->latencyHistory)
         ];
     }
     protected function _boot()
