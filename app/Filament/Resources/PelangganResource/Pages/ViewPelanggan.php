@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\PelangganResource\Pages;
 
+use App\Filament\Clusters\PelangganManager\Resources\PelangganResource\Widgets\ClientMonitor;
 use App\Models\Pelanggan;
 use App\Models\PPPoE\Secret;
 use Filament\Infolists\Infolist;
@@ -118,7 +119,18 @@ class ViewPelanggan extends ViewRecord
                 ->view("livewire.server-info");
         }
     }
-
+    public function getHeaderWidgets(): array
+    {
+        return  [
+            ClientMonitor::make()
+        ];
+    }
+    public function getWidgetData(): array
+    {
+        return [
+            "record" => $this->record
+        ];
+    }
     public function infolist(Infolist $infolist): Infolist
     {
         return $infolist->schema([

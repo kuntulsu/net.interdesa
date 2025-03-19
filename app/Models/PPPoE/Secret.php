@@ -111,7 +111,11 @@ class Secret extends Model
             return false;
         }
     }
-
+    public function findInterface(): string
+    {
+        $interface = "<pppoe-{$this->name}>";
+        return $interface;
+    }
     public static function isolir()
     {
         $tagihan = \App\Models\Tagihan::latest()->first();

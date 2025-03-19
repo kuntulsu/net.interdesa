@@ -19,9 +19,9 @@ class OdpRelationManager extends RelationManager
     protected static ?string $title = "Pelanggan se-ODP";
  
     public function isReadOnly(): bool
-{
-    return true;
-}
+    {
+        return true;
+    }
     public function form(Form $form): Form
     {
         return $form
@@ -34,6 +34,9 @@ class OdpRelationManager extends RelationManager
     public function getTableQuery(): Builder
     {
         $odp_id = $this->ownerRecord->odp?->id;
+        if(!$odp_id){
+            return Pelanggan::where("odp_id", "HolderToNull");
+        }
         return Pelanggan::where("odp_id", $odp_id);
     }
     public function table(Table $table): Table
@@ -46,7 +49,8 @@ class OdpRelationManager extends RelationManager
                     ->link()
                     ->icon("heroicon-o-map-pin")
             ])
-            ->heading("Daftar Pelanggan Dengan ODP yang Sama") 
+            ->heading("Daftar Pelanggan Dengan ODP yang Sama")
+            ->emptyStateHeading("Pelanggan Tidak Terdaftar di ODP") 
             ->recordTitleAttribute('nama')
             ->modifyQueryUsing(fn($query) => $query->with("profil.secret.active"))
             ->columns([
@@ -70,7 +74,6 @@ class OdpRelationManager extends RelationManager
             ->filters([
                 //
             ])
-
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),

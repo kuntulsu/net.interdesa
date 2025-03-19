@@ -3,7 +3,6 @@ deployment:
   tasks:
     - export DEPLOYPATH=~/public_html/net.interdesa
     - export php83=/opt/alt/php83/usr/bin/php
-    - export npm=/opt/alt/alt-nodejs22/root/bin/npm
     - /bin/cp -R -f app $DEPLOYPATH
     - /bin/cp -R -f bootstrap $DEPLOYPATH
     - /bin/cp -R -f config $DEPLOYPATH
@@ -16,7 +15,6 @@ deployment:
     - /bin/cp -R -f artisan $DEPLOYPATH
     - /bin/cp -R -f composer.json $DEPLOYPATH
     - /bin/cp -R -f composer.lock $DEPLOYPATH
-    - $php83 $DEPLOYPATH/composer.phar install --working-dir=$DEPLOYPATH
     - $php83 $DEPLOYPATH/artisan migrate
     - $php83 $DEPLOYPATH/artisan filament:optimize-clear
     - $php83 $DEPLOYPATH/artisan filament:optimize

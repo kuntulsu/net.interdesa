@@ -20,7 +20,27 @@ class Monitoring extends Model
         // return $interface->json();
 
     }
+    public static function ping($address)
+    {
+        try{
+            $response = Http::routeros()
+                ->post("/ping", [
+                    "address" => $address,
+                    "count" => 1
+                ]);
+            
+            return $response->json();
 
+        }catch(\Illuminate\Http\Client\ConnectionException $e){
+            Notification::make("connection-failure")
+                ->title("Connection Failure")
+                ->body($e->getMessage())
+                ->persistent()
+                ->danger()
+                ->send();
+            return [];
+        }
+    }
     public static function monitor($interface)
     {
         try{

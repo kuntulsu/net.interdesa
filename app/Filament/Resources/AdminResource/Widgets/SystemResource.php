@@ -15,7 +15,7 @@ class SystemResource extends BaseWidget
     public $mem_usage_history = [];
     public $traffic_usage_history = [];
     // protected int | string | array $columnSpan = 2;
-    protected static ?string $pollingInterval = "null";
+    protected static ?string $pollingInterval = "5s";
     protected static bool $isLazy = false;
     protected static string $title = "System Resources";
     protected function getStats(): array
