@@ -36,7 +36,7 @@ class ClientReportController extends Controller
                 ])
             ]);
         Telegram::sendMessage([
-            'chat_id' => env('TELEGRAM_CHAT_ID'),
+            'chat_id' => config("telegram.default_chat_id"),
             'parse_mode' => 'HTML',
             'text' => 
                 "❌ <b>Client Disconnected</b>\n\n" .
@@ -55,7 +55,7 @@ class ClientReportController extends Controller
         $secret_id = $request->get("secId");
         $pelanggan = Pelanggan::with("profil")->whereHas("profil", fn($query) => $query->where("secret_id", $secret_id))->first();
         Telegram::sendMessage([
-            'chat_id' => env('TELEGRAM_CHAT_ID'),
+            'chat_id' => config('telegram.default_chat_id'),
             'parse_mode' => 'HTML',
             'text' => "✅ <b>Client Connected</b>\n\n" .
                 "Nama: <code>{$pelanggan->nama}</code>\n" .
@@ -89,7 +89,7 @@ class ClientReportController extends Controller
         $offlineMsg = "{$offlineCount} ({$offlinePercent})";
 
         Telegram::sendMessage([
-            'chat_id' => env('TELEGRAM_CHAT_ID'),
+            'chat_id' => config('telegram.default_chat_id'),
             'text' => "<b>🔔 Client Health Report</b>\n\n" .
                 "Total P<code>elanggan: {$pelangganCount}</code>\n" .
                 "Active: <code>{$activeMsg}</code>\n" .

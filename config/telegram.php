@@ -58,6 +58,7 @@ return [
     */
     'default' => 'mybot',
 
+    'default_chat_id' => env('TELEGRAM_CHAT_ID'),
     /*
     |--------------------------------------------------------------------------
     | Asynchronous Requests [Optional]

@@ -40,7 +40,7 @@ class ServerReportController extends Controller
 
         
         Telegram::sendMessage([
-            'chat_id' => env('TELEGRAM_CHAT_ID'),
+            'chat_id' => config("telegram.default_chat_id"),
             'text' => $message,
             'parse_mode' => 'HTML',
         ]);
