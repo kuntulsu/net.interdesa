@@ -127,6 +127,18 @@ class Secret extends Model
         $secret_ids = $data->pluck("profil.secret.id");
         return self::massDisableSecret($secret_ids);
     }
+    public static function massDropActive(Collection $actives)
+    {
+        $ids = $actives->join(",");
+        $response = Http::routeros()->post("/ppp/active/remove", [
+            ".id" => $ids
+        ]);
+        if($response->ok()){
+            return true;
+        }else{
+            return false;
+        }
+    }
     public static function massDisableSecret(Collection $secret_ids)
     {
         $ids = $secret_ids->join(",");

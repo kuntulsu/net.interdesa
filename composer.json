@@ -9,6 +9,7 @@
         "bezhansalleh/filament-shield": "^3.3",
         "calebporzio/sushi": "^2.5",
         "filament/filament": "^3.2",
+        "irazasyed/telegram-bot-sdk": "^3.15",
         "itsgoingd/clockwork": "^5.2",
         "joshembling/image-optimizer": "^1.4",
         "laravel/framework": "^11.9",

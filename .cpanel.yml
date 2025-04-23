@@ -3,6 +3,7 @@ deployment:
   tasks:
     - export DEPLOYPATH=~/public_html/net.interdesa
     - export php83=/opt/alt/php83/usr/bin/php
+    - $php83 $DEPLOYPATH/artisan down
     - /bin/cp -R -f app $DEPLOYPATH
     - /bin/cp -R -f bootstrap $DEPLOYPATH
     - /bin/cp -R -f config $DEPLOYPATH
@@ -20,3 +21,4 @@ deployment:
     - $php83 $DEPLOYPATH/artisan filament:optimize
     - $php83 $DEPLOYPATH/artisan optimize:clear
     - $php83 $DEPLOYPATH/artisan optimize
+    - $php83 $DEPLOYPATH/artisan up

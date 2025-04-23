@@ -34,6 +34,9 @@ class ODPResource extends Resource
             ->schema([
                 TextInput::make("nama")
                     ->label("Nama ODP"),
+                TextInput::make("description")
+                    ->nullable()
+                    ->label("Deskripsi Lokasi ODP"),
                 TextInput::make("slot")
                     ->label("Jumlah Slot ODP")
                     ->numeric(),
@@ -54,7 +57,8 @@ class ODPResource extends Resource
                     ->getStateUsing(function ($record){
                         return "ODP-{$record->id}";
                     }),
-                TextColumn::make("nama"),
+                TextColumn::make("nama")
+                    ->description(fn($record) => $record->description),
                 TextColumn::make("slot")
                     ->label("Max Slot")->badge()->alignCenter(),
                 TextColumn::make("pelanggan_count")

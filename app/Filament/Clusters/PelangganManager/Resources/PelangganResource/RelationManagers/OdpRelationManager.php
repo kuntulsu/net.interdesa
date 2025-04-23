@@ -49,7 +49,7 @@ class OdpRelationManager extends RelationManager
                     ->link()
                     ->icon("heroicon-o-map-pin")
             ])
-            ->heading("Daftar Pelanggan Dengan ODP yang Sama")
+            ->heading("ODP: {$this->ownerRecord->odp?->nama} - {$this->ownerRecord->odp?->description}")
             ->emptyStateHeading("Pelanggan Tidak Terdaftar di ODP") 
             ->recordTitleAttribute('nama')
             ->modifyQueryUsing(fn($query) => $query->with("profil.secret.active"))

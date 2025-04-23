@@ -1,8 +1,17 @@
 <?php
 
-use Illuminate\Foundation\Inspiring;
-use Illuminate\Support\Facades\Artisan;
+use App\Http\Controllers\API\v1\ClientReportController;
+use App\Http\Controllers\API\v1\ServerReportController;
+use Illuminate\Support\Facades\Schedule;
 
-Artisan::command('inspire', function () {
-    $this->comment(Inspiring::quote());
-})->purpose('Display an inspiring quote')->hourly();
+
+
+
+Schedule::call(fn () => ClientReportController::health_report())
+    ->hourly()
+    ->name("Notify Telegram About Client Health")
+    ->timezone('Asia/Jakarta');
+Schedule::call(fn() => ServerReportController::serverReport())
+    ->hourly()
+    ->name("Notify Telegram About Server Health")
+    ->timezone('Asia/Jakarta');
