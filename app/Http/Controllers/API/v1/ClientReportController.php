@@ -29,6 +29,10 @@ class ClientReportController extends Controller
                 Keyboard::inlineButton([
                     'text' => 'Contact',
                     'url' => "https://wa.me/{$pelanggan->telp}",
+                ]),
+                Keyboard::inlineButton([
+                    'text' => 'Lokasi ODP',
+                    'url' => "https://maps.google.com/?q={$pelanggan->odp?->coordinate}"
                 ])
             ]);
         Telegram::sendMessage([
@@ -38,6 +42,8 @@ class ClientReportController extends Controller
                 "❌ <b>Client Disconnected</b>\n\n" .
                 "Nama: <code>{$pelanggan->nama}</code>\n" .
                 "Alamat: <code>{$pelanggan->alamat}</code>\n" .
+                "ODP: <code>{$pelanggan->odp?->nama}</code>\n".
+                "ODP Deskripsi: <code>{$pelanggan->odp?->description}</code>\n".
                 "Telp: <code>{$pelanggan->telp}</code>\n" .
                 "Event: <code>down</code>\n" .
                 "Time: <code>" . now() . "</code>\n",

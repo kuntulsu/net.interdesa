@@ -13,13 +13,15 @@ class ServerReportController extends Controller
 {
     public static function serverReport()
     {
+        $interface = config("monitoring.monitoring.interface");
+
         $resource = Resource::first();
         $googleLatencies = Monitoring::ping("8.8.8.8")[0]['time'];
         $cloudflareLatencies = Monitoring::ping("1.1.1.1")[0]['time'];
-        $trafficMonitor = Monitoring::monitor("wlan2");
-        $uploadTraffic = $trafficMonitor[0]['rx-bits-per-second'] / 1024 / 1024;
+        $trafficMonitor = Monitoring::monitor($interface);
+        $uploadTraffic = $trafficMonitor[0]['tx-bits-per-second'] / 1024 / 1024;
         $uploadTraffic = Number::format($uploadTraffic, 2);
-        $downloadTraffic = $trafficMonitor[0]['tx-bits-per-second'] / 1024 / 1024;
+        $downloadTraffic = $trafficMonitor[0]['rx-bits-per-second'] / 1024 / 1024;
         $downloadTraffic = Number::format($downloadTraffic, 2);
         $cpu_load = $resource['cpu-load'];
         $uptime = $resource->uptime;

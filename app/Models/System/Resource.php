@@ -31,6 +31,8 @@ class Resource extends Model
             return [];
         }
 
+        return [];
+
         
     }
 }
