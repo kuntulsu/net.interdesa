@@ -52,12 +52,11 @@ class Secret extends Model
     {
         // Log::info('Model called from:', debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 5));
         try {
-            $response = Http::routeros()
-                ->get("/ppp/secret");
+            $response = Http::routeros()->get("/ppp/secret");
             $data = $response->collect();
 
             return $this->toSchema($data);
-        }catch(\Illuminate\Http\Client\ConnectionException $e){
+        } catch (\Illuminate\Http\Client\ConnectionException $e) {
             Notification::make("connection-failure")
                 ->title("Connection Failure")
                 ->body($e->getMessage())
@@ -65,7 +64,7 @@ class Secret extends Model
                 ->danger()
                 ->send();
             return [];
-        }catch(\Exception $e){
+        } catch (\Exception $e) {
             Notification::make("connection-failure")
                 ->title("Connection Failure")
                 ->body($e->getMessage())
@@ -94,20 +93,20 @@ class Secret extends Model
     public function enable()
     {
         $response = Http::routeros()->patch("/ppp/secret/{$this->id}", [
-            "disabled" => "no"
+            "disabled" => "no",
         ]);
     }
     public function disable()
     {
         $response = Http::routeros()->patch("/ppp/secret/{$this->id}", [
-            "disabled" => "yes"
+            "disabled" => "yes",
         ]);
-        if($response->ok()){
+        if ($response->ok()) {
             $secret = $response->collect();
-            if($secret['disabled'] == "true"){
+            if ($secret["disabled"] == "true") {
                 return true;
             }
-        }else{
+        } else {
             return false;
         }
     }
@@ -116,38 +115,44 @@ class Secret extends Model
         $interface = "<pppoe-{$this->name}>";
         return $interface;
     }
-    public static function isolir()
+    public static function isolir(): void
     {
         $tagihan = \App\Models\Tagihan::latest()->first();
-        $data = \App\Models\Pelanggan::whereDoesntHave("pembayaran", function ($query) use ($tagihan) {
-                $query->where("tagihan_id", $tagihan->id);
-            })
+        $data = \App\Models\Pelanggan::whereDoesntHave("pembayaran", function (
+            $query
+        ) use ($tagihan) {
+            $query->where("tagihan_id", $tagihan->id);
+        })
             ->NotWhitelist()
-            ->with("profil.secret")->get();
+            ->with("profil.secret")
+            ->with("profil.secret.active")
+            ->get();
         $secret_ids = $data->pluck("profil.secret.id");
-        return self::massDisableSecret($secret_ids);
+        $active_ids = $data->pluck("profil.secret.active.id");
+        self::massDisableSecret($secret_ids);
+        self::massDropActive($active_ids);
     }
-    public static function massDropActive(Collection $actives)
+    public static function massDropActive(Collection $actives): bool
     {
         $ids = $actives->join(",");
         $response = Http::routeros()->post("/ppp/active/remove", [
-            ".id" => $ids
+            ".id" => $ids,
         ]);
-        if($response->ok()){
+        if ($response->ok()) {
             return true;
-        }else{
+        } else {
             return false;
         }
     }
-    public static function massDisableSecret(Collection $secret_ids)
+    public static function massDisableSecret(Collection $secret_ids): bool
     {
         $ids = $secret_ids->join(",");
         $response = Http::routeros()->post("/ppp/secret/disable", [
-            ".id" => $ids
+            ".id" => $ids,
         ]);
-        if($response->ok()){
+        if ($response->ok()) {
             return true;
-        }else{
+        } else {
             return false;
         }
     }
@@ -170,9 +175,7 @@ class Secret extends Model
                 $data["local-address"] = $secret["local-address"];
                 $data["remote-address"] = $secret["remote-address"];
             }
-            $response = Http::routeros()
-                ->put("/ppp/secret", $data)
-                ->json();
+            $response = Http::routeros()->put("/ppp/secret", $data)->json();
 
             $secret->id = $response[".id"];
             // \App\Models\ProfilPelanggan::create([
@@ -191,10 +194,7 @@ class Secret extends Model
             // dd($secret->id);
             $active = $secret->active;
             $response = Http::routeros()
-                ->patch(
-                    "/ppp/secret/{$secret->id}",
-                    $data
-                )
+                ->patch("/ppp/secret/{$secret->id}", $data)
                 ->json();
             $active?->dropConnection();
             dd($response, $data);
