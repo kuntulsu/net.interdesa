@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\TipeTransaksi;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -20,7 +21,7 @@ class Transaksi extends Model
     protected function casts(): array
     {
         return [
-            "tipe" => \App\TipeTransaksi::class,
+            "tipe" => TipeTransaksi::class,
         ];
     }
 }

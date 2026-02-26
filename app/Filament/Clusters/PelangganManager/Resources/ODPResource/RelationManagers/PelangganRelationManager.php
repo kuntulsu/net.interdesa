@@ -2,9 +2,11 @@
 
 namespace App\Filament\Clusters\PelangganManager\Resources\ODPResource\RelationManagers;
 
+use Filament\Schemas\Schema;
+use Filament\Actions\CreateAction;
+use Filament\Actions\DeleteAction;
 use Filament\Forms;
 use Filament\Tables;
-use Filament\Forms\Form;
 use App\Models\Pelanggan;
 use Filament\Tables\Table;
 use Filament\Forms\Components\Select;
@@ -18,10 +20,10 @@ class PelangganRelationManager extends RelationManager
 {
     protected static string $relationship = 'pelanggan';
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
+        return $schema
+            ->components([
                 // Forms\Components\TextInput::make('nama')
                 //     ->required()
                 //     ->maxLength(255),
@@ -40,8 +42,8 @@ class PelangganRelationManager extends RelationManager
             ->modifyQueryUsing(fn($query) => $query->with("profil.secret.active"))
             ->recordTitleAttribute('nama')
             ->columns([
-                Tables\Columns\TextColumn::make('nama'),
-                Tables\Columns\TextColumn::make('alamat'),
+                TextColumn::make('nama'),
+                TextColumn::make('alamat'),
                 TextColumn::make("is_active")
                 ->getStateUsing(function ($record){
                     $active = $record->profil->secret->active;
@@ -60,7 +62,7 @@ class PelangganRelationManager extends RelationManager
                 //
             ])
             ->headerActions([
-                Tables\Actions\CreateAction::make()
+                CreateAction::make()
                     ->using(function (array $data, string $model) {
                         $pelanggan  = Pelanggan::find($data['pelanggan_id']);
                         $pelanggan->odp_id = $this->ownerRecord->id;
@@ -69,9 +71,9 @@ class PelangganRelationManager extends RelationManager
                         return $pelanggan;
                     }),
             ])
-            ->actions([
+            ->recordActions([
                 // Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make()
+                DeleteAction::make()
                     ->using(function($record) {
                         $record->odp_id = null;
                         $record->save();

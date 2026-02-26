@@ -29,7 +29,7 @@ class CreateTagihan extends CreateRecord
 
             $tagihan = $pelanggan->tagihan()->create([
                 "name" => $data['name'],
-                "tipe_tagihan" => \App\TipeTagihanEnum::to($data['tipe_tagihan'])?->value,
+                "tipe_tagihan" => TipeTagihanEnum::to($data['tipe_tagihan'])?->value,
                 "nominal_tagihan" => $data["nominal_tagihan"] ?? 0,
                 "end_date" => $data["end_date"] ?? null
             ]);
@@ -40,7 +40,7 @@ class CreateTagihan extends CreateRecord
             $tagihan = Tagihan::create([
                 "pelanggan_id" => null,
                 "name" => $data['name'],
-                "tipe_tagihan" => \App\TipeTagihanEnum::to($data['tipe_tagihan']),
+                "tipe_tagihan" => TipeTagihanEnum::to($data['tipe_tagihan']),
                 "nominal_tagihan" => 0,
                 "end_date" => $data['end_date'] ?? null
             ]);

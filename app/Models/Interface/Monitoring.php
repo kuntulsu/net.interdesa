@@ -2,6 +2,7 @@
 
 namespace App\Models\Interface;
 
+use Illuminate\Http\Client\ConnectionException;
 use Sushi\Sushi;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Database\Eloquent\Model;
@@ -31,7 +32,7 @@ class Monitoring extends Model
             
             return $response->json();
 
-        }catch(\Illuminate\Http\Client\ConnectionException $e){
+        }catch(ConnectionException $e){
             Notification::make("connection-failure")
                 ->title("Connection Failure")
                 ->body($e->getMessage())
@@ -52,7 +53,7 @@ class Monitoring extends Model
             
             return $response->json();
 
-        }catch(\Illuminate\Http\Client\ConnectionException $e){
+        }catch(ConnectionException $e){
             Notification::make("connection-failure")
                 ->title("Connection Failure")
                 ->body($e->getMessage())

@@ -2,14 +2,14 @@
 
 namespace App\Filament\Resources\TicketResource\Pages;
 
+use Filament\Support\Enums\Size;
+use Filament\Schemas\Schema;
 use Dom\Text;
 use App\TicketStatus;
 use Filament\Actions\Action;
-use Filament\Infolists\Infolist;
 use Filament\Resources\Pages\Page;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Contracts\HasForms;
-use Filament\Support\Enums\ActionSize;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use App\Filament\Resources\TicketResource;
@@ -29,13 +29,13 @@ class ViewTicket extends Page implements HasInfolists,HasForms
 
     protected static string $resource = TicketResource::class;
 
-    protected static string $view = 'filament.resources.ticket-resource.pages.view-ticket';
+    protected string $view = 'filament.resources.ticket-resource.pages.view-ticket';
     public $data = [];
     public function createAction()
     {
         return Action::make("create")
             ->label("Make Progress")
-            ->hidden(fn() => ($this->record->status == \App\TicketStatus::Completed))
+            ->hidden(fn() => ($this->record->status == TicketStatus::Completed))
             ->action(function ($data) {
                 $this->record->progress()->create([
                     "task" => $data["task"],
@@ -43,19 +43,19 @@ class ViewTicket extends Page implements HasInfolists,HasForms
                 ]);
 
                 $this->record->update([
-                    "status" => \App\TicketStatus::Process
+                    "status" => TicketStatus::Process
                 ]);
 
                 if($data["is_solved"] == 1) {
                     $this->record->update([
-                        "status" => \App\TicketStatus::Completed,
+                        "status" => TicketStatus::Completed,
                         "solver" => auth()->id()
                     ]);
                 }
             })
             ->icon("heroicon-o-pencil-square")
-            ->size(ActionSize::Small)
-            ->form([
+            ->size(Size::Small)
+            ->schema([
                 TextInput::make("task")
                     ->required()
                     ->maxLength(255),
@@ -69,12 +69,12 @@ class ViewTicket extends Page implements HasInfolists,HasForms
             ]);
 
     }
-    public function productInfolist(Infolist $infolist): Infolist
+    public function productInfolist(Schema $schema): Schema
     {
-        return $infolist
+        return $schema
             ->record($this->record)
             ->columns(2)
-            ->schema([
+            ->components([
                 TextEntry::make("title"),
                 TextEntry::make("description"),
                 TextEntry::make("status")

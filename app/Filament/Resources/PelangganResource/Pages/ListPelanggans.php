@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\PelangganResource\Pages;
 
+use Filament\Actions\CreateAction;
 use App\Filament\Resources\PelangganResource;
 use App\Filament\Resources\PelangganResource\Widgets\PelangganOverview;
 use Filament\Actions;
@@ -13,7 +14,7 @@ class ListPelanggans extends ListRecords
 
     protected function getHeaderActions(): array
     {
-        return [Actions\CreateAction::make()];
+        return [CreateAction::make()];
     }
     protected function getHeaderWidgets(): array
     {

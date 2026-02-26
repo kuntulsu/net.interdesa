@@ -2,6 +2,13 @@
 
 namespace App\Filament\Clusters\PelangganManager\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Actions\EditAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use App\Filament\Clusters\PelangganManager\Resources\ODPResource\Pages\ListODPS;
+use App\Filament\Clusters\PelangganManager\Resources\ODPResource\Pages\CreateODP;
+use App\Filament\Clusters\PelangganManager\Resources\ODPResource\Pages\EditODP;
 use App\Filament\Clusters\PelangganManager;
 use App\Filament\Clusters\PelangganManager\Resources\ODPResource\Pages;
 use App\Filament\Clusters\PelangganManager\Resources\ODPResource\RelationManagers;
@@ -9,7 +16,6 @@ use App\Filament\Clusters\PelangganManager\Resources\ODPResource\RelationManager
 use App\Models\ODP;
 use Filament\Forms;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\IconColumn;
@@ -22,16 +28,16 @@ class ODPResource extends Resource
 {
     protected static ?string $model = ODP::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-rectangle-stack';
     protected static ?string $slug = "odp";
     // protected static ?string $cluster = PelangganManager::class;
-    protected static ?string $navigationGroup = 'Pelanggan Manager';
+    protected static string | \UnitEnum | null $navigationGroup = 'Pelanggan Manager';
 
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
+        return $schema
+            ->components([
                 TextInput::make("nama")
                     ->label("Nama ODP"),
                 TextInput::make("description")
@@ -75,12 +81,12 @@ class ODPResource extends Resource
             ->filters([
                 //
             ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
+            ->recordActions([
+                EditAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -95,9 +101,9 @@ class ODPResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListODPS::route('/'),
-            'create' => Pages\CreateODP::route('/create'),
-            'edit' => Pages\EditODP::route('/{record}/edit'),
+            'index' => ListODPS::route('/'),
+            'create' => CreateODP::route('/create'),
+            'edit' => EditODP::route('/{record}/edit'),
         ];
     }
 }

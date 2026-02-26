@@ -2,12 +2,18 @@
 
 namespace App\Filament\Clusters\PelangganManager\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Actions\EditAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use App\Filament\Clusters\PelangganManager\Resources\TagihanResource\Pages\ListTagihans;
+use App\Filament\Clusters\PelangganManager\Resources\TagihanResource\Pages\CreateTagihan;
+use App\Filament\Clusters\PelangganManager\Resources\TagihanResource\Pages\EditTagihan;
 use Filament\Forms;
 use Filament\Tables;
 use App\Models\Tagihan;
-use Filament\Forms\Get;
 use App\TipeTagihanEnum;
-use Filament\Forms\Form;
 use App\Models\Pelanggan;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
@@ -26,18 +32,18 @@ class TagihanResource extends Resource
 {
     protected static ?string $model = Tagihan::class;
 
-    protected static ?string $navigationIcon = "heroicon-o-clipboard-document-list";
+    protected static string | \BackedEnum | null $navigationIcon = "heroicon-o-clipboard-document-list";
 
     // protected static ?string $cluster = PelangganManager::class;
-    protected static ?string $navigationGroup = 'Pelanggan Manager';
+    protected static string | \UnitEnum | null $navigationGroup = 'Pelanggan Manager';
 
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form->schema([
+        return $schema->components([
             TextInput::make("name")->label("Nama Tagihan"),
             Select::make("tipe_tagihan")
-                ->options(\App\TipeTagihanEnum::toArray())
+                ->options(TipeTagihanEnum::toArray())
                 ->live()
                 ->native(false),
             Select::make("pelanggan_id")
@@ -79,9 +85,9 @@ class TagihanResource extends Resource
             //     fn($query) => $query->withSum("terbayar", "nominal_tagihan")
             // )
             ->columns([
-                Tables\Columns\TextColumn::make("name")->searchable(),
-                Tables\Columns\TextColumn::make("tipe_tagihan"),
-                Tables\Columns\TextColumn::make("nominal_tagihan")->money("IDR"),
+                TextColumn::make("name")->searchable(),
+                TextColumn::make("tipe_tagihan"),
+                TextColumn::make("nominal_tagihan")->money("IDR"),
                 IconColumn::make("is_paid")
                     ->default("")
                     ->label("Lunas")
@@ -107,10 +113,10 @@ class TagihanResource extends Resource
             ->filters([
                 //
             ])
-            ->actions([Tables\Actions\EditAction::make()])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->recordActions([EditAction::make()])
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -125,9 +131,9 @@ class TagihanResource extends Resource
     public static function getPages(): array
     {
         return [
-            "index" => Pages\ListTagihans::route("/"),
-            "create" => Pages\CreateTagihan::route("/create"),
-            "edit" => Pages\EditTagihan::route("/{record}/edit"),
+            "index" => ListTagihans::route("/"),
+            "create" => CreateTagihan::route("/create"),
+            "edit" => EditTagihan::route("/{record}/edit"),
         ];
     }
 }

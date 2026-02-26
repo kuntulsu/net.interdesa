@@ -45,7 +45,7 @@ class Tagihan extends Model
     protected function casts(): array
     {
         return [
-            "tipe_tagihan" => \App\TipeTagihanEnum::class,
+            "tipe_tagihan" => TipeTagihanEnum::class,
             "nominal_tagihan"=> "decimal:2"
         ];
     }

@@ -2,22 +2,22 @@
 
 namespace App\Filament\Resources\PelangganResource\Pages;
 
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Actions;
+use Filament\Actions\Action;
+use Filament\Schemas\Schema;
 use App\Filament\Clusters\PelangganManager\Resources\PelangganResource\Widgets\ClientMonitor;
 use App\Models\Pelanggan;
 use App\Models\PPPoE\Secret;
-use Filament\Infolists\Infolist;
 use Filament\Infolists\Components\Tabs;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
 use Filament\Pages\SubNavigationPosition;
-use Filament\Infolists\Components\Actions;
-use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\TextEntry;
 use App\Filament\Resources\PelangganResource;
 use App\Helpers\Helper;
 use App\Models\System\Resource;
-use Filament\Infolists\Components\Actions\Action;
 use Illuminate\Support\Facades\Log;
 use Filament\Infolists\Components\ViewEntry;
 class ViewPelanggan extends ViewRecord
@@ -131,7 +131,7 @@ class ViewPelanggan extends ViewRecord
             "record" => $this->record
         ];
     }
-    public function infolist(Infolist $infolist): Infolist
+    public function infolist(Schema $schema): Schema
     {
         return $infolist->schema([
             

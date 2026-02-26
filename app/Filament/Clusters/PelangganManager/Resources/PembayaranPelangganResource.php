@@ -2,11 +2,15 @@
 
 namespace App\Filament\Clusters\PelangganManager\Resources;
 
+use Filament\Schemas\Schema;
+use App\TipeTagihanEnum;
+use App\Filament\Clusters\PelangganManager\Resources\PembayaranPelangganResource\Pages\ListPembayaranPelanggans;
+use App\Filament\Clusters\PelangganManager\Resources\PembayaranPelangganResource\Pages\CreatePembayaranPelanggan;
+use App\Filament\Clusters\PelangganManager\Resources\PembayaranPelangganResource\Pages\EditPembayaranPelanggan;
 use Filament\Forms;
 use App\Models\User;
 use Filament\Tables;
 use App\Models\Tagihan;
-use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
 use App\Models\PembayaranPelanggan;
@@ -27,16 +31,16 @@ class PembayaranPelangganResource extends Resource
 {
     protected static ?string $model = PembayaranPelanggan::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-credit-card';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-credit-card';
 
     // protected static ?string $cluster = PelangganManager::class;
-    protected static ?string $navigationGroup = 'Pelanggan Manager';
+    protected static string | \UnitEnum | null $navigationGroup = 'Pelanggan Manager';
 
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
+        return $schema
+            ->components([
                 //
             ]);
     }
@@ -93,7 +97,7 @@ class PembayaranPelangganResource extends Resource
                     ->options(fn (): array => User::query()->pluck('name', 'id')->all()),
                 SelectFilter::make("tagihan_id")
                     ->label("Nama Tagihan")
-                    ->options(fn (): array => Tagihan::where("tipe_tagihan", \App\TipeTagihanEnum::to("BULANAN"))->get()->pluck("name", "id")->toArray()),
+                    ->options(fn (): array => Tagihan::where("tipe_tagihan", TipeTagihanEnum::to("BULANAN"))->get()->pluck("name", "id")->toArray()),
                 SelectFilter::make("payment_method")
                     ->label("Metode Pembayaran")
                     ->options([
@@ -101,7 +105,7 @@ class PembayaranPelangganResource extends Resource
                         "1" => "Transfer"
                     ]),
                 Filter::make('created_at')
-                    ->form([
+                    ->schema([
                         DatePicker::make('created_from'),
                         DatePicker::make('created_until'),
                     ])
@@ -117,10 +121,10 @@ class PembayaranPelangganResource extends Resource
                             );
                     })
             ])
-            ->actions([
+            ->recordActions([
                 // Tables\Actions\EditAction::make(),
             ])
-            ->bulkActions([
+            ->toolbarActions([
                 // Tables\Actions\BulkActionGroup::make([
                 //     Tables\Actions\DeleteBulkAction::make(),
                 // ]),
@@ -137,9 +141,9 @@ class PembayaranPelangganResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListPembayaranPelanggans::route('/'),
-            'create' => Pages\CreatePembayaranPelanggan::route('/create'),
-            'edit' => Pages\EditPembayaranPelanggan::route('/{record}/edit'),
+            'index' => ListPembayaranPelanggans::route('/'),
+            'create' => CreatePembayaranPelanggan::route('/create'),
+            'edit' => EditPembayaranPelanggan::route('/{record}/edit'),
         ];
     }
 }

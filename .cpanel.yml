@@ -1,24 +1,8 @@
 ---
 deployment:
   tasks:
-    - export DEPLOYPATH=~/public_html/net.interdesa
+    - export DEPLOYPATH=~/public_html/
     - export php83=/opt/alt/php83/usr/bin/php
-    - $php83 $DEPLOYPATH/artisan down
-    - /bin/cp -R -f app $DEPLOYPATH
-    - /bin/cp -R -f bootstrap $DEPLOYPATH
-    - /bin/cp -R -f config $DEPLOYPATH
-    - /bin/cp -R -f database $DEPLOYPATH
-    - /bin/cp -R -f public $DEPLOYPATH
-    - /bin/cp -R -f resources $DEPLOYPATH
-    - /bin/cp -R -f routes $DEPLOYPATH
-    - /bin/cp -R -f storage $DEPLOYPATH
-    - /bin/cp -R -f tests $DEPLOYPATH
-    - /bin/cp -R -f artisan $DEPLOYPATH
-    - /bin/cp -R -f composer.json $DEPLOYPATH
-    - /bin/cp -R -f composer.lock $DEPLOYPATH
-    - $php83 $DEPLOYPATH/artisan migrate --force
-    - $php83 $DEPLOYPATH/artisan filament:optimize-clear
-    - $php83 $DEPLOYPATH/artisan filament:optimize
-    - $php83 $DEPLOYPATH/artisan optimize:clear
-    - $php83 $DEPLOYPATH/artisan optimize
-    - $php83 $DEPLOYPATH/artisan up
+    - /bin/cp -R ../net.interdesa $DEPLOYPATH > ~/public_html/net.interdesa/log.txt
+    - $php83 ~/public_html/net.interdesa/artisan filament:optimize-clear > ~/public_html/net.interdesa/log.txt
+    - $php83 ~/public_html/net.interdesa/artisan filament:optimize > ~/public_html/net.interdesa/log.txt

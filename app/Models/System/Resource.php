@@ -2,6 +2,7 @@
 
 namespace App\Models\System;
 
+use Illuminate\Http\Client\ConnectionException;
 use Sushi\Sushi;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Http;
@@ -21,7 +22,7 @@ class Resource extends Model
             if($response->ok()){
                 return [$response->json()];
             }
-        }catch(\Illuminate\Http\Client\ConnectionException $e){
+        }catch(ConnectionException $e){
             Notification::make("connection-failure")
                 ->title("Connection Failure")
                 ->body($e->getMessage())

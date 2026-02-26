@@ -2,6 +2,13 @@
 
 namespace App\Models\PPPoE;
 
+use Sushi\Sushi;
+use Illuminate\Http\Client\ConnectionException;
+use Exception;
+use App\Models\ProfilPelanggan;
+use App\Models\Tagihan;
+use App\Models\Pelanggan;
+use App\Casts\CustomBoolean;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
@@ -11,7 +18,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Secret extends Model
 {
-    use \Sushi\Sushi;
+    use Sushi;
     protected $primaryKey = "id";
     protected $guarded = [];
     protected $schema = [
@@ -56,7 +63,7 @@ class Secret extends Model
             $data = $response->collect();
 
             return $this->toSchema($data);
-        } catch (\Illuminate\Http\Client\ConnectionException $e) {
+        } catch (ConnectionException $e) {
             Notification::make("connection-failure")
                 ->title("Connection Failure")
                 ->body($e->getMessage())
@@ -64,7 +71,7 @@ class Secret extends Model
                 ->danger()
                 ->send();
             return [];
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Notification::make("connection-failure")
                 ->title("Connection Failure")
                 ->body($e->getMessage())
@@ -76,19 +83,19 @@ class Secret extends Model
     }
     public function profil(): HasOne
     {
-        return $this->hasOne(\App\Models\ProfilPelanggan::class);
+        return $this->hasOne(ProfilPelanggan::class);
     }
     public function paket(): HasOne
     {
         return $this->hasOne(
-            \App\Models\PPPoE\Profile::class,
+            Profile::class,
             "name",
             "profile"
         );
     }
     public function active(): HasOne
     {
-        return $this->hasOne(\App\Models\PPPoE\Active::class, "name", "name");
+        return $this->hasOne(Active::class, "name", "name");
     }
     public function enable()
     {
@@ -117,8 +124,8 @@ class Secret extends Model
     }
     public static function isolir(): void
     {
-        $tagihan = \App\Models\Tagihan::latest()->first();
-        $data = \App\Models\Pelanggan::whereDoesntHave("pembayaran", function (
+        $tagihan = Tagihan::latest()->first();
+        $data = Pelanggan::whereDoesntHave("pembayaran", function (
             $query
         ) use ($tagihan) {
             $query->where("tagihan_id", $tagihan->id);
@@ -131,6 +138,7 @@ class Secret extends Model
         $active_ids = $data->pluck("profil.secret.active.id");
         self::massDisableSecret($secret_ids);
         self::massDropActive($active_ids);
+        Log::info("Isolir Initiated");
     }
     public static function massDropActive(Collection $actives): bool
     {
@@ -204,7 +212,7 @@ class Secret extends Model
     {
         return [
             "id" => "string",
-            "disabled" => \App\Casts\CustomBoolean::class,
+            "disabled" => CustomBoolean::class,
         ];
     }
 }

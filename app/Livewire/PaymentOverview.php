@@ -2,15 +2,18 @@
 
 namespace App\Livewire;
 
+use App\Models\Pelanggan;
+use App\PaymentMethodEnum;
+use App\Models\PembayaranPelanggan;
 use App\Models\Tagihan;
 use Livewire\Component;
 use Filament\Notifications\Notification;
 
 class PaymentOverview extends Component
 {
-    public \App\Models\Pelanggan $ownerRecord;
-    public \App\Models\Tagihan $record;
-    public \App\PaymentMethodEnum | string $payment_method;
+    public Pelanggan $ownerRecord;
+    public Tagihan $record;
+    public PaymentMethodEnum | string $payment_method;
     public $diskon;
 
     public function pay()
@@ -19,7 +22,7 @@ class PaymentOverview extends Component
         $pelanggan = $this->ownerRecord;
         $harga_paket = $this->ownerRecord->profil->secret->paket->harga?->harga;
         
-        $pembayaran = \App\Models\PembayaranPelanggan::create([
+        $pembayaran = PembayaranPelanggan::create([
             "pelanggan_id" => $pelanggan->id,
             "tagihan_id" => $tagihan->id,
             "nominal_tagihan" => ($this->diskon == "pemasangan") ? $harga_paket/2 : $harga_paket,
@@ -44,7 +47,7 @@ class PaymentOverview extends Component
     {
         $this->ownerRecord = $ownerRecord;
         $this->record = $record;
-        $this->payment_method = \App\PaymentMethodEnum::Tunai;
+        $this->payment_method = PaymentMethodEnum::Tunai;
     }
     public function render()
     {

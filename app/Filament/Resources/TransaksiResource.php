@@ -2,11 +2,17 @@
 
 namespace App\Filament\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Actions\EditAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use App\Filament\Resources\TransaksiResource\Pages\ListTransaksis;
+use App\Filament\Resources\TransaksiResource\Pages\CreateTransaksi;
+use App\Filament\Resources\TransaksiResource\Pages\EditTransaksi;
 use App\Filament\Resources\TransaksiResource\Pages;
 use App\Filament\Resources\TransaksiResource\RelationManagers;
 use App\Models\Transaksi;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -30,11 +36,11 @@ class TransaksiResource extends Resource
 
     protected static ?string $model = Transaksi::class;
 
-    protected static ?string $navigationIcon = "heroicon-o-arrows-up-down";
+    protected static string | \BackedEnum | null $navigationIcon = "heroicon-o-arrows-up-down";
     protected static ?int $navigationSort = 3;
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form->columns(2)->schema([
+        return $schema->columns(2)->components([
             TextInput::make("keterangan")
                 ->required()
                 ->label("Keterangan Transaksi"),
@@ -77,7 +83,7 @@ class TransaksiResource extends Resource
         return $table
             ->columns([
                 TextColumn::make("tipe")->badge()->color(
-                    fn(\App\TipeTransaksi $state): string => match (
+                    fn(TipeTransaksi $state): string => match (
                         $state->value
                     ) {
                         "KELUAR" => "warning",
@@ -100,13 +106,13 @@ class TransaksiResource extends Resource
             ->filters([
                 //
             ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
+            ->recordActions([
+                EditAction::make(),
                 // Tables\Actions\DeleteAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -121,9 +127,9 @@ class TransaksiResource extends Resource
     public static function getPages(): array
     {
         return [
-            "index" => Pages\ListTransaksis::route("/"),
-            "create" => Pages\CreateTransaksi::route("/create"),
-            "edit" => Pages\EditTransaksi::route("/{record}/edit"),
+            "index" => ListTransaksis::route("/"),
+            "create" => CreateTransaksi::route("/create"),
+            "edit" => EditTransaksi::route("/{record}/edit"),
         ];
     }
 }

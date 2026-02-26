@@ -2,6 +2,10 @@
 
 namespace App\Filament\Resources\PelangganResource\Pages;
 
+use App\Models\Pelanggan;
+use App\Models\PPPoE\Secret;
+use App\Models\ProfilPelanggan;
+use Filament\Actions\DeleteAction;
 use App\Filament\Resources\PelangganResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
@@ -12,7 +16,7 @@ class EditPelanggan extends EditRecord
     protected static string $resource = PelangganResource::class;
     protected function mutateFormDataBeforeFill(array $data): array
     {
-        $pelanggan = \App\Models\Pelanggan::find($data["id"]);
+        $pelanggan = Pelanggan::find($data["id"]);
         $secret = $pelanggan->profil?->secret;
         if ($secret) {
             $data["secret"] = $secret?->toArray();
@@ -31,13 +35,13 @@ class EditPelanggan extends EditRecord
         ]);
 
         if (isset($data["secret"])) {
-            $secret = \App\Models\PPPoE\Secret::find($data["secret"]["id"]);
+            $secret = Secret::find($data["secret"]["id"]);
             unset($data["secret"]["id"]);
             $secret->update($data["secret"]);
         }
 
         if (isset($data["secret_id"])) {
-            \App\Models\ProfilPelanggan::create([
+            ProfilPelanggan::create([
                 "pelanggan_id" => $record->id,
                 "secret_id" => $data["secret_id"],
             ]);
@@ -51,6 +55,6 @@ class EditPelanggan extends EditRecord
     }
     protected function getHeaderActions(): array
     {
-        return [Actions\DeleteAction::make()];
+        return [DeleteAction::make()];
     }
 }

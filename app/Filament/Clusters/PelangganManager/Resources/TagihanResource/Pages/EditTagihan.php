@@ -2,6 +2,7 @@
 
 namespace App\Filament\Clusters\PelangganManager\Resources\TagihanResource\Pages;
 
+use Filament\Actions\DeleteAction;
 use App\Filament\Clusters\PelangganManager\Resources\TagihanResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
@@ -13,7 +14,7 @@ class EditTagihan extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+            DeleteAction::make(),
         ];
     }
 }

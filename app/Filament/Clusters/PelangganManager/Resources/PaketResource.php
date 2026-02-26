@@ -2,12 +2,20 @@
 
 namespace App\Filament\Clusters\PelangganManager\Resources;
 
+use App\Models\PPPoE\Profile;
+use Filament\Schemas\Schema;
+use App\Models\HargaPaket;
+use Filament\Actions\EditAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use App\Filament\Clusters\PelangganManager\Resources\PaketResource\Pages\ListPakets;
+use App\Filament\Clusters\PelangganManager\Resources\PaketResource\Pages\CreatePaket;
+use App\Filament\Clusters\PelangganManager\Resources\PaketResource\Pages\EditPaket;
 use App\Filament\Clusters\PelangganManager;
 use App\Filament\Clusters\PelangganManager\Resources\PaketResource\Pages;
 use App\Filament\Clusters\PelangganManager\Resources\PaketResource\RelationManagers;
 use App\Models\Paket;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -20,17 +28,17 @@ use Filament\Tables\Columns\TextInputColumn;
 
 class PaketResource extends Resource
 {
-    protected static ?string $model = \App\Models\PPPoE\Profile::class;
+    protected static ?string $model = Profile::class;
 
-    protected static ?string $navigationIcon = "heroicon-o-cube";
+    protected static string | \BackedEnum | null $navigationIcon = "heroicon-o-cube";
 
     // protected static ?string $cluster = PelangganManager::class;
-    protected static ?string $navigationGroup = 'Pelanggan Manager';
+    protected static string | \UnitEnum | null $navigationGroup = 'Pelanggan Manager';
 
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form->schema([
+        return $schema->components([
             TextInput::make("name"),
             TextInput::make("harga.harga"),
         ]);
@@ -45,12 +53,12 @@ class PaketResource extends Resource
                     ->type("number")
                     ->inputMode("decimal")
                     ->beforeStateUpdated(function ($record, $state) {
-                        $harga = \App\Models\HargaPaket::where(
+                        $harga = HargaPaket::where(
                             "profile_id",
                             $record->id
                         )->first();
                         if (!$harga) {
-                            \App\Models\HargaPaket::create([
+                            HargaPaket::create([
                                 "profile_id" => $record->id,
                                 "harga" => 0,
                             ]);
@@ -67,10 +75,10 @@ class PaketResource extends Resource
             ->filters([
                 //
             ])
-            ->actions([Tables\Actions\EditAction::make()])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->recordActions([EditAction::make()])
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -85,9 +93,9 @@ class PaketResource extends Resource
     public static function getPages(): array
     {
         return [
-            "index" => Pages\ListPakets::route("/"),
-            "create" => Pages\CreatePaket::route("/create"),
-            "edit" => Pages\EditPaket::route("/{record}/edit"),
+            "index" => ListPakets::route("/"),
+            "create" => CreatePaket::route("/create"),
+            "edit" => EditPaket::route("/{record}/edit"),
         ];
     }
 }

@@ -1,7 +1,7 @@
 <?php
 namespace App\Helpers;
 
-
+use App\Models\System\Resource;
 
 class Helper
 {
@@ -17,7 +17,7 @@ class Helper
     }
     public static function server_checkup()
     {
-        $resource = \App\Models\System\Resource::first();
+        $resource = Resource::first();
         if($resource) {
             return true;
         }

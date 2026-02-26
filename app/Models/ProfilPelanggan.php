@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\PPPoE\Secret;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -18,7 +19,7 @@ class ProfilPelanggan extends Model
     public function secret(): HasOne
     {
         return $this->hasOne(
-            \App\Models\PPPoE\Secret::class,
+            Secret::class,
             "id",
             "secret_id"
         );

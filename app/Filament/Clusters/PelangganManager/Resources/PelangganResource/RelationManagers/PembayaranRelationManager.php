@@ -2,6 +2,9 @@
 
 namespace App\Filament\Clusters\PelangganManager\Resources\PelangganResource\RelationManagers;
 
+use Filament\Actions\Action;
+use Filament\Schemas\Components\Section;
+use Filament\Actions\BulkActionGroup;
 use Dom\Text;
 use Filament\Forms;
 use Filament\Tables;
@@ -13,7 +16,6 @@ use App\Models\Pelanggan;
 use Filament\Tables\Table;
 use Filament\Actions\StaticAction;
 use App\Models\PembayaranPelanggan;
-use Filament\Tables\Actions\Action;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Model;
@@ -21,7 +23,6 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\ViewField;
 use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Builder;
-use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\TextEntry;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Resources\RelationManagers\RelationManager;
@@ -86,9 +87,9 @@ class PembayaranRelationManager extends RelationManager
             })
 
             ->columns([
-                Tables\Columns\TextColumn::make("name"),
-                Tables\Columns\TextColumn::make("tipe_tagihan"),
-                Tables\Columns\TextColumn::make("nominal_tagihan")
+                TextColumn::make("name"),
+                TextColumn::make("tipe_tagihan"),
+                TextColumn::make("nominal_tagihan")
                     ->getStateUsing(function(Tagihan $record){
                         $terbayar = PembayaranPelanggan::where("tagihan_id", $record->id)
                             ->where("pelanggan_id", $this->ownerRecord->id)
@@ -132,7 +133,7 @@ class PembayaranRelationManager extends RelationManager
                 //     ->label("Jatuh Tempo")
                 //     ->date("d F Y"),
                 TextColumn::make("operator")
-                    ->getStateUsing(function (\App\Models\Tagihan $record){
+                    ->getStateUsing(function (Tagihan $record){
                         return $record->pembayaran()
                             ->where("pelanggan_id", $this->ownerRecord->id)
                             ->where("tagihan_id", $record->id)
@@ -157,7 +158,7 @@ class PembayaranRelationManager extends RelationManager
                 //
             ])
  
-            ->actions([
+            ->recordActions([
                 Action::make("bayar")
                     // ->modalSubmitAction(fn (StaticAction $action) => $action->label('Bayar Tagihan'))
                     ->hidden(fn() => $this->lunas)
@@ -232,7 +233,7 @@ class PembayaranRelationManager extends RelationManager
                 Action::make("invoice")
                     ->action(fn($record) => dd($record))
                     ->icon("heroicon-o-eye")
-                    ->infolist([
+                    ->schema([
                         Section::make()
                             ->columns(2)
                             ->schema([
@@ -289,8 +290,8 @@ class PembayaranRelationManager extends RelationManager
                     })
                     ->button()
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
+            ->toolbarActions([
+                BulkActionGroup::make([
                     // Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);

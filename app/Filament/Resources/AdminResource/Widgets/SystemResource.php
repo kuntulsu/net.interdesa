@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\AdminResource\Widgets;
 
+use App\Helpers\Helper;
 use App\Models\Interface\Monitoring;
 use App\Models\System\Resource;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
@@ -14,13 +15,13 @@ class SystemResource extends BaseWidget
     public $mem_usage_history = [];
     public $traffic_usage_history = [];
     // protected int | string | array $columnSpan = 2;
-    protected static ?string $pollingInterval = "5s";
+    protected ?string $pollingInterval = "5s";
     protected static bool $isLazy = false;
     protected static string $title = "System Resources";
     protected function getStats(): array
     {
         // dd(\App\Helpers\Helper::server_checkup());
-        if (!\App\Helpers\Helper::server_checkup()) {
+        if (!Helper::server_checkup()) {
             return [view("livewire.server-info")];
         }
         $resource = Resource::first();

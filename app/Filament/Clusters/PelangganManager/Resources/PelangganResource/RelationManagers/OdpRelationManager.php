@@ -2,15 +2,21 @@
 
 namespace App\Filament\Clusters\PelangganManager\Resources\PelangganResource\RelationManagers;
 
+use Filament\Schemas\Schema;
+use Filament\Forms\Components\TextInput;
+use Filament\Actions\Action;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Actions\EditAction;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
 use Filament\Forms;
 use Filament\Tables;
-use Filament\Forms\Form;
 use \App\Models\Pelanggan;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\ActionGroup;
 
 class OdpRelationManager extends RelationManager
@@ -22,11 +28,11 @@ class OdpRelationManager extends RelationManager
     {
         return true;
     }
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\TextInput::make('nama')
+        return $schema
+            ->components([
+                TextInput::make('nama')
                     ->required()
                     ->maxLength(255),
             ]);
@@ -54,9 +60,9 @@ class OdpRelationManager extends RelationManager
             ->recordTitleAttribute('nama')
             ->modifyQueryUsing(fn($query) => $query->with("profil.secret.active"))
             ->columns([
-                Tables\Columns\TextColumn::make('nama'),
-                Tables\Columns\TextColumn::make('alamat'),
-                Tables\Columns\TextColumn::make("is_active")
+                TextColumn::make('nama'),
+                TextColumn::make('alamat'),
+                TextColumn::make("is_active")
                 ->getStateUsing(function ($record){
                     $active = $record->profil->secret->active;
                     if($active) {
@@ -74,13 +80,13 @@ class OdpRelationManager extends RelationManager
             ->filters([
                 //
             ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+            ->recordActions([
+                EditAction::make(),
+                DeleteAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }

@@ -2,6 +2,12 @@
 
 namespace App\Filament\Resources;
 
+use Filament\Schemas\Schema;
+use App\Models\Pelanggan;
+use App\Filament\Resources\TicketResource\Pages\ListTickets;
+use App\Filament\Resources\TicketResource\Pages\CreateTicket;
+use App\Filament\Resources\TicketResource\Pages\EditTicket;
+use App\Filament\Resources\TicketResource\Pages\ViewTicket;
 use App\Filament\Resources\TicketResource\Pages;
 use App\Filament\Resources\TicketResource\RelationManagers;
 use App\Filament\Resources\TicketResource\RelationManagers\ProgressRelationManager;
@@ -11,7 +17,6 @@ use App\TicketStatus;
 use Filament\Forms;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
@@ -23,12 +28,12 @@ class TicketResource extends Resource
 {
     protected static ?string $model = Ticket::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-wrench';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-wrench';
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
+        return $schema
+            ->components([
                 TextInput::make('title')
                     ->required()
                     ->label('Title'),
@@ -38,7 +43,7 @@ class TicketResource extends Resource
                     ->maxLength(65535),
                 Select::make('pelanggan_id')
                     ->options(
-                            \App\Models\Pelanggan::selectRaw("id, CONCAT(nama, ' - ', alamat) as nama")->pluck("nama", "id")
+                            Pelanggan::selectRaw("id, CONCAT(nama, ' - ', alamat) as nama")->pluck("nama", "id")
                         )
                     ->searchable()
                     ->label('Pelanggan')
@@ -76,7 +81,7 @@ class TicketResource extends Resource
             ->filters([
                 //
             ])
-            ->actions([
+            ->recordActions([
                 // Tables\Actions\EditAction::make(),
             ]);
     }
@@ -94,10 +99,10 @@ class TicketResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListTickets::route('/'),
-            'create' => Pages\CreateTicket::route('/create'),
-            'edit' => Pages\EditTicket::route('/{record}/edit'),
-            'view' => Pages\ViewTicket::route('/{record}'),
+            'index' => ListTickets::route('/'),
+            'create' => CreateTicket::route('/create'),
+            'edit' => EditTicket::route('/{record}/edit'),
+            'view' => ViewTicket::route('/{record}'),
         ];
     }
 }

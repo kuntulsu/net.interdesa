@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\TicketStatus;
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Model;
 
@@ -48,6 +49,6 @@ class Ticket extends Model
         return 'uuid';
     }
     protected $casts = [
-        'status' => \App\TicketStatus::class,
+        'status' => TicketStatus::class,
     ];
 }

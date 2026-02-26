@@ -2,10 +2,23 @@
 
 namespace App\Filament\Resources;
 
+use Filament\Pages\Enums\SubNavigationPosition;
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
+use Carbon\Carbon;
+use App\Models\PPPoE\Secret;
+use App\Models\PPPoE\Profile;
+use App\Filament\Resources\PelangganResource\Pages\ViewPelanggan;
+use App\Filament\Resources\PelangganResource\Pages\EditPelanggan;
+use Filament\Actions\ViewAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use App\Filament\Resources\PelangganResource\Pages\ListPelanggans;
+use App\Filament\Resources\PelangganResource\Pages\CreatePelanggan;
 use App\Filament\Clusters\PelangganManager\Resources\PelangganResource\RelationManagers\OdpRelationManager;
 use Filament\Forms;
 use Filament\Tables;
-use Filament\Forms\Form;
 use App\Models\Pelanggan;
 use Filament\Tables\Table;
 use Filament\Infolists\Infolist;
@@ -14,12 +27,10 @@ use Filament\Resources\Resource;
 use Filament\Resources\Pages\Page;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Section;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Forms\Components\DatePicker;
-use Filament\Pages\SubNavigationPosition;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Infolists\Components\TextEntry;
 use App\Filament\Resources\PelangganResource\Pages;
@@ -31,17 +42,17 @@ use App\Filament\Resources\PelangganResource\Widgets\PelangganOverview;
 class PelangganResource extends Resource
 {
     protected static ?string $model = Pelanggan::class;
-    protected static SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Start;
+    protected static ?\Filament\Pages\Enums\SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Start;
     // protected static ?string $cluster = \App\Filament\Clusters\PelangganManager::class;
     // protected static ?string $recordTitleAttribute = "pelanggan";
 
     protected static ?string $slug = "pelanggan";
-    protected static ?string $navigationIcon = "heroicon-o-user-group";
-    protected static ?string $navigationGroup = 'Pelanggan Manager';
+    protected static string | \BackedEnum | null $navigationIcon = "heroicon-o-user-group";
+    protected static string | \UnitEnum | null $navigationGroup = 'Pelanggan Manager';
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form->schema([
+        return $schema->components([
             Section::make("Informasi Pribadi")
                 ->columns(2)
                 ->schema([
@@ -64,7 +75,7 @@ class PelangganResource extends Resource
                     DatePicker::make("jatuh_tempo")
                         ->label("Jatuh Tempo")
                         ->native(false)
-                        ->default(\Carbon\Carbon::create("15-11-2024"))
+                        ->default(Carbon::create("15-11-2024"))
                         ->required(),
                     Select::make("secret_id")
                         ->label("Connect to PPPoE Secret")
@@ -79,7 +90,7 @@ class PelangganResource extends Resource
                             "Hanya Secret Yang Belum Terdaftar di Pelanggan"
                         )
                         ->options(
-                            \App\Models\PPPoE\Secret::with("profil")
+                            Secret::with("profil")
                                 ->get()
                                 ->where("profil", null)
                                 ->pluck("name", "id")
@@ -99,7 +110,7 @@ class PelangganResource extends Resource
                                         ->revealable(),
                                     Select::make("secret.profile")
                                         ->options(
-                                            \App\Models\PPPoE\Profile::all()->pluck(
+                                            Profile::all()->pluck(
                                                 "name",
                                                 "name"
                                             )
@@ -115,7 +126,7 @@ class PelangganResource extends Resource
                                 ]),
                         ])
                         ->createOptionUsing(function (array $data): string|null {
-                            $secret = \App\Models\PPPoE\Secret::create(
+                            $secret = Secret::create(
                                 $data["secret"]
                             );
                             if($secret) {
@@ -142,7 +153,7 @@ class PelangganResource extends Resource
                         ->revealable(),
                     Select::make("secret.profile")
                         ->options(
-                            \App\Models\PPPoE\Profile::all()->pluck(
+                            Profile::all()->pluck(
                                 "name",
                                 "name"
                             )
@@ -167,8 +178,8 @@ class PelangganResource extends Resource
     public static function getRecordSubNavigation(Page $page): array
     {
         return $page->generateNavigationItems([
-            Pages\ViewPelanggan::class,
-            Pages\EditPelanggan::class,
+            ViewPelanggan::class,
+            EditPelanggan::class,
         ]);
     }
     public static function table(Table $table): Table
@@ -206,13 +217,13 @@ class PelangganResource extends Resource
             ->filters([
                 //
             ])
-            ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
+            ->recordActions([
+                ViewAction::make(),
+                EditAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -228,10 +239,10 @@ class PelangganResource extends Resource
     public static function getPages(): array
     {
         return [
-            "index" => Pages\ListPelanggans::route("/"),
-            "create" => Pages\CreatePelanggan::route("/create"),
-            "view" => Pages\ViewPelanggan::route("/{record}"),
-            "edit" => Pages\EditPelanggan::route("/{record}/edit"),
+            "index" => ListPelanggans::route("/"),
+            "create" => CreatePelanggan::route("/create"),
+            "view" => ViewPelanggan::route("/{record}"),
+            "edit" => EditPelanggan::route("/{record}/edit"),
         ];
     }
 }

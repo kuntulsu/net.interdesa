@@ -2,6 +2,8 @@
 
 namespace App\Models\PPPoE;
 
+use Exception;
+use Illuminate\Http\Client\ConnectionException;
 use Sushi\Sushi;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Database\Eloquent\Model;
@@ -24,7 +26,7 @@ class Active extends Model
             $response = Http::routeros()->delete(
                 "/ppp/active/{$this->id}"
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             dd($e);
         }
     }
@@ -48,7 +50,7 @@ class Active extends Model
                 array_push($actives, $filtered);
             }
             return $actives;
-        }catch(\Illuminate\Http\Client\ConnectionException $e){
+        }catch(ConnectionException $e){
             Notification::make("connection-failure")
                 ->title("Connection Failure")
                 ->body($e->getMessage())

@@ -2,6 +2,11 @@
 
 namespace App\Providers\Filament;
 
+use Filament\View\PanelsRenderHook;
+use Illuminate\Support\Facades\Blade;
+
+use Filament\Pages\Dashboard;
+use Filament\Widgets\AccountWidget;
 use App\Filament\Resources\AdminResource\Widgets\SystemResource;
 use App\Filament\Resources\PelangganResource;
 use App\Filament\Resources\PelangganResource\Widgets\PelangganOverview;
@@ -27,50 +32,54 @@ class AdminPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
-
         return $panel
             ->default()
             ->id("admin")
             ->path("admin")
             ->login()
-            ->brandName('Interdesa Pecangaan')
+            ->brandName("Interdesa Pecangaan")
             ->brandLogo(asset("interdesa.png"))
             ->renderHook(
-                \Filament\View\PanelsRenderHook::USER_MENU_BEFORE,
-                fn (): string => \Illuminate\Support\Facades\Blade::render('@livewire(\App\Livewire\ServerIndicator::class)'),
+                PanelsRenderHook::USER_MENU_BEFORE,
+                fn(): string => Blade::render(
+                    "@livewire(\App\Livewire\ServerIndicator::class)",
+                ),
             )
             ->assets([
-                Css::make("my-stylesheet", Vite::asset("resources/css/app.css"))
+                Css::make(
+                    "my-stylesheet",
+                    Vite::asset("resources/css/app.css"),
+                ),
             ])
             ->colors([
                 "primary" => Color::Blue,
             ])
             ->discoverResources(
                 in: app_path("Filament/Resources"),
-                for: "App\\Filament\\Resources"
+                for: "App\\Filament\\Resources",
             )
             ->discoverPages(
                 in: app_path("Filament/Pages"),
-                for: "App\\Filament\\Pages"
+                for: "App\\Filament\\Pages",
             )
             ->discoverClusters(
                 in: app_path("Filament/Clusters"),
-                for: "App\\Filament\\Clusters"
+                for: "App\\Filament\\Clusters",
             )
             ->plugins([
-                \TomatoPHP\FilamentUsers\FilamentUsersPlugin::make(),
-                \BezhanSalleh\FilamentShield\FilamentShieldPlugin::make()
+                // FilamentUsersPlugin::make(),
+                // FilamentShieldPlugin::make()
             ])
-            ->pages([Pages\Dashboard::class])
+            ->pages([Dashboard::class])
             ->discoverWidgets(
                 in: app_path("Filament/Widgets"),
-                for: "App\\Filament\\Widgets"
+                for: "App\\Filament\\Widgets",
             )
             ->widgets([
                 // ServerInfo::class,
                 SystemResource::class,
-                Widgets\AccountWidget::class,
-                // Widgets\FilamentInfoWidget::class,
+                AccountWidget::class,
+                Widgets\FilamentInfoWidget::class,
                 PelangganOverview::class,
             ])
             ->middleware([

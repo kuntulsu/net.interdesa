@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Models\PPPoE\Secret;
+use App\Casts\Telp;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -21,7 +23,7 @@ class Pelanggan extends Model
     public function secret()
     {
         return $this->hasOneThrough(
-            PPPoE\Secret::class,
+            Secret::class,
             ProfilPelanggan::class,
             "pelanggan_id",
             "id",
@@ -70,7 +72,7 @@ class Pelanggan extends Model
     protected function casts(): array
     {
         return [
-            "telp" => \App\Casts\Telp::class,
+            "telp" => Telp::class,
             "whitelist" => "boolean"
         ];
     }

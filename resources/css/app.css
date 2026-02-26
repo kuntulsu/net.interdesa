@@ -1,4 +1,5 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-@tailwind variants;
+@import "../../vendor/filament/filament/resources/css/theme.css";
+@source "../../app/Filament/**/*.php",
+@source "../../resources/views/filament/**/*.blade.php",
+@source "../../resources/views/components/*.blade.php",
+@source "../../vendor/filament/**/*.blade.php",;

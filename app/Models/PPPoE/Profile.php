@@ -2,6 +2,9 @@
 
 namespace App\Models\PPPoE;
 
+use Illuminate\Http\Client\ConnectionException;
+use App\Models\HargaPaket;
+use App\Casts\CustomBoolean;
 use Sushi\Sushi;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Database\Eloquent\Model;
@@ -36,7 +39,7 @@ class Profile extends Model
                 }
                 return $profiles;
             }
-        }catch(\Illuminate\Http\Client\ConnectionException $e){
+        }catch(ConnectionException $e){
             Notification::make("connection-failure")
                 ->title("Connection Failure")
                 ->body($e->getMessage())
@@ -48,7 +51,7 @@ class Profile extends Model
     }
     public function harga()
     {
-        return $this->hasOne(\App\Models\HargaPaket::class, "profile_id", "id");
+        return $this->hasOne(HargaPaket::class, "profile_id", "id");
     }
     protected static function booted(): void
     {
@@ -67,7 +70,7 @@ class Profile extends Model
     {
         return [
             "id" => "string",
-            "default" => \App\Casts\CustomBoolean::class,
+            "default" => CustomBoolean::class,
         ];
     }
 }
