@@ -22,26 +22,26 @@ class ClientMonitor extends BaseWidget
         // rx = upload
         $this->_boot();
 
-        if(!$this->isClientActive()){
+        if (!$this->isClientActive()) {
             return [
                 view("components.client-offline-indicator", [
-                    "secretDisabled" => $this->secret->disabled
-                ])
+                    "secretDisabled" => $this->secret->disabled,
+                ]),
             ];
         }
         $monitoring = Monitoring::monitor($this->secret->findInterface());
         $ping = Monitoring::ping($this->secret->active?->address);
         // dd([$monitoring, $ping]);
 
-        $downloadTraffic = $monitoring[0]['tx-bits-per-second'] / 1024 / 1024;
+        $downloadTraffic = $monitoring[0]["tx-bits-per-second"] / 1024 / 1024;
         $downloadTraffic = Number::format($downloadTraffic, 2);
         array_push($this->downloadHistory, $downloadTraffic);
 
-        $uploadTraffic = $monitoring[0]['rx-bits-per-second'] / 1024 / 1024;
+        $uploadTraffic = $monitoring[0]["rx-bits-per-second"] / 1024 / 1024;
         $uploadTraffic = Number::format($uploadTraffic, 2);
         array_push($this->uploadHistory, $uploadTraffic);
 
-        $latencies = $ping[0]['time'] ?? $ping[0]['status'];
+        $latencies = $ping[0]["time"] ?? $ping[0]["status"];
         return [
             Stat::make("Download", "{$downloadTraffic} Mbps")
                 ->description("{$this->secret->name}")
@@ -54,9 +54,9 @@ class ClientMonitor extends BaseWidget
                 ->icon("heroicon-o-arrow-up")
                 ->chart($this->uploadHistory),
             Stat::make("Latencies", $latencies)
-                ->description("Host: {$ping[0]['host']}")
+                ->description("Host: {$ping[0]["host"]}")
                 ->color("info")
-                ->icon("heroicon-o-arrows-up-down")
+                ->icon("heroicon-o-arrows-up-down"),
         ];
     }
     protected function _boot()
@@ -73,5 +73,4 @@ class ClientMonitor extends BaseWidget
     {
         $this->secret = $this->record->profil->secret;
     }
-
 }

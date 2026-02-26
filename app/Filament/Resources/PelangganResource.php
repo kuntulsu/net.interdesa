@@ -47,12 +47,12 @@ class PelangganResource extends Resource
     // protected static ?string $recordTitleAttribute = "pelanggan";
 
     protected static ?string $slug = "pelanggan";
-    protected static string | \BackedEnum | null $navigationIcon = "heroicon-o-user-group";
-    protected static string | \UnitEnum | null $navigationGroup = 'Pelanggan Manager';
+    protected static string|\BackedEnum|null $navigationIcon = "heroicon-o-user-group";
+    protected static string|\UnitEnum|null $navigationGroup = "Pelanggan Manager";
 
     public static function form(Schema $schema): Schema
     {
-        return $schema->components([
+        return $schema->columnSpanFull()->components([
             Section::make("Informasi Pribadi")
                 ->columns(2)
                 ->schema([
@@ -79,7 +79,6 @@ class PelangganResource extends Resource
                         ->required(),
                     Select::make("secret_id")
                         ->label("Connect to PPPoE Secret")
-                        ->relationship("profil")
                         // ->hiddenOn("edit")
                         ->hidden(function ($record) {
                             return $record?->profil ? true : false;
@@ -87,13 +86,13 @@ class PelangganResource extends Resource
                         ->preload()
                         ->searchable()
                         ->helperText(
-                            "Hanya Secret Yang Belum Terdaftar di Pelanggan"
+                            "Hanya Secret Yang Belum Terdaftar di Pelanggan",
                         )
                         ->options(
                             Secret::with("profil")
                                 ->get()
                                 ->where("profil", null)
-                                ->pluck("name", "id")
+                                ->pluck("name", "id"),
                         )
                         ->createOptionForm([
                             Section::make("Informasi Teknis")
@@ -102,7 +101,7 @@ class PelangganResource extends Resource
                                     Hidden::make("secret.id"),
 
                                     TextInput::make("secret.name")->label(
-                                        "PPPoE Username"
+                                        "PPPoE Username",
                                     ),
                                     TextInput::make("secret.password")
                                         ->label("PPPoE Password")
@@ -112,8 +111,8 @@ class PelangganResource extends Resource
                                         ->options(
                                             Profile::all()->pluck(
                                                 "name",
-                                                "name"
-                                            )
+                                                "name",
+                                            ),
                                         )
                                         ->label("Paket")
                                         ->native(false),
@@ -125,13 +124,13 @@ class PelangganResource extends Resource
                                         ->ipv4(),
                                 ]),
                         ])
-                        ->createOptionUsing(function (array $data): string|null {
-                            $secret = Secret::create(
-                                $data["secret"]
-                            );
-                            if($secret) {
+                        ->createOptionUsing(function (
+                            array $data,
+                        ): string|null {
+                            $secret = Secret::create($data["secret"]);
+                            if ($secret) {
                                 Notification::make()
-                                    ->title('Saved successfully')
+                                    ->title("Saved successfully")
                                     ->success()
                                     ->send();
                             }
@@ -152,12 +151,7 @@ class PelangganResource extends Resource
                         ->password()
                         ->revealable(),
                     Select::make("secret.profile")
-                        ->options(
-                            Profile::all()->pluck(
-                                "name",
-                                "name"
-                            )
-                        )
+                        ->options(Profile::all()->pluck("name", "name"))
                         ->label("Paket")
                         ->native(false),
                     TextInput::make("secret.local-address")
@@ -171,9 +165,7 @@ class PelangganResource extends Resource
     }
     public static function getWidgets(): array
     {
-        return [
-            PelangganOverview::class
-        ];
+        return [PelangganOverview::class];
     }
     public static function getRecordSubNavigation(Page $page): array
     {
@@ -190,15 +182,18 @@ class PelangganResource extends Resource
             //         $query->with("secret");
             //     }]);
             // })
-            ->recordClasses(fn(Pelanggan $record) => match($record->whitelist){
-                true => "dark:bg-indigo-900 dark:text-white bg-indigo-200 text-indigo-900",
-                false => null,
-                default => null
-            })
+            ->recordClasses(
+                fn(Pelanggan $record) => match ($record->whitelist) {
+                    true
+                        => "dark:bg-indigo-900 dark:text-white bg-indigo-200 text-indigo-900",
+                    false => null,
+                    default => null,
+                },
+            )
             ->columns([
-
                 TextColumn::make("nama")->searchable(),
-                TextColumn::make("alamat")->searchable()
+                TextColumn::make("alamat")
+                    ->searchable()
                     // ->getStateUsing(function ($record){
                     //     return $record->profil?->secret?->name;
                     // })
@@ -217,23 +212,15 @@ class PelangganResource extends Resource
             ->filters([
                 //
             ])
-            ->recordActions([
-                ViewAction::make(),
-                EditAction::make(),
-            ])
+            ->recordActions([ViewAction::make(), EditAction::make()])
             ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                ]),
+                BulkActionGroup::make([DeleteBulkAction::make()]),
             ]);
     }
 
     public static function getRelations(): array
     {
-        return [
-            PembayaranRelationManager::class,
-            OdpRelationManager::class,
-        ];
+        return [PembayaranRelationManager::class, OdpRelationManager::class];
     }
 
     public static function getPages(): array

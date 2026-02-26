@@ -27,7 +27,7 @@ class ViewPelanggan extends ViewRecord
 
     public function informasi_teknis()
     {
-        if(Helper::server_checkup()) {
+        if (Helper::server_checkup()) {
             $secret = $this->getRecord()->profil->secret;
 
             return Section::make("Informasi Teknis")
@@ -38,7 +38,7 @@ class ViewPelanggan extends ViewRecord
                         Action::make("refresh_connection")
                             ->requiresConfirmation(function ($action, $record) {
                                 $action->modalDescription(
-                                    "Akan Merefresh Koneksi PPPoE (Jika Aktif)"
+                                    "Akan Merefresh Koneksi PPPoE (Jika Aktif)",
                                 );
 
                                 return $action;
@@ -56,15 +56,15 @@ class ViewPelanggan extends ViewRecord
                         Action::make("disable_connection")
                             ->requiresConfirmation(function ($action, $record) {
                                 $action->modalDescription(
-                                    "Akan Mengisolir Koneksi PPPoE"
+                                    "Akan Mengisolir Koneksi PPPoE",
                                 );
                                 return $action;
                             })
-                            ->action(function (Pelanggan $record){
+                            ->action(function (Pelanggan $record) {
                                 $secret = $record->profil->secret;
                                 $disable = $secret?->disable();
                                 $secret?->active?->dropConnection();
-                                if($disable) {
+                                if ($disable) {
                                     Notification::make()
                                         ->title("Secret Disabled Successfully")
                                         ->success()
@@ -76,72 +76,70 @@ class ViewPelanggan extends ViewRecord
                             ->icon("heroicon-o-power"),
                     ]),
                     TextEntry::make("sec_name")
-                        ->getStateUsing(function ($record) use ($secret){
+                        ->getStateUsing(function ($record) use ($secret) {
                             return $secret->name;
                         })
                         ->copyable()
                         ->copyMessage("Copied.")
                         ->label("PPPoE Username"),
                     TextEntry::make("sec_password")
-                        ->getStateUsing(function ($record) use ($secret){
+                        ->getStateUsing(function ($record) use ($secret) {
                             return $secret->password;
                         })
                         ->copyable()
                         ->copyMessage("Copied.")
                         ->label("PPPoE Password"),
                     TextEntry::make("sec_local-address")
-                        ->getStateUsing(function ($record) use ($secret){
-                            return $secret['local-address'];
+                        ->getStateUsing(function ($record) use ($secret) {
+                            return $secret["local-address"];
                         })
                         ->copyable()
                         ->copyMessage("Copied.")
                         ->label("PPPoE Local Address"),
                     TextEntry::make("sec_remote-address")
-                        ->getStateUsing(function ($record) use ($secret){
-                            return $secret['remote-address'];
+                        ->getStateUsing(function ($record) use ($secret) {
+                            return $secret["remote-address"];
                         })
                         ->copyable()
                         ->copyMessage("Copied.")
                         ->label("PPPoE Remote Address"),
                     TextEntry::make("sec_profile")
-                        ->getStateUsing(function ($record) use ($secret){
+                        ->getStateUsing(function ($record) use ($secret) {
                             return $secret->profile;
                         })
                         ->label("Profile Paket"),
                     TextEntry::make("sec_service")
-                    ->getStateUsing(function ($record) use ($secret){
-                        return $secret->service;
-                    })->label("Tipe Layanan"),
+                        ->getStateUsing(function ($record) use ($secret) {
+                            return $secret->service;
+                        })
+                        ->label("Tipe Layanan"),
                 ])
                 ->collapsible();
-        }else{
-            return ViewEntry::make('status')
-                ->view("livewire.server-info");
+        } else {
+            return ViewEntry::make("status")->view("livewire.server-info");
         }
     }
     public function getHeaderWidgets(): array
     {
-        return  [
-            ClientMonitor::make()
-        ];
+        return [ClientMonitor::make()];
     }
+
     public function getWidgetData(): array
     {
         return [
-            "record" => $this->record
+            "record" => $this->record,
         ];
     }
     public function infolist(Schema $schema): Schema
     {
-        return $infolist->schema([
-            
+        return $schema->columns(1)->components([
             Section::make("Informasi Pribadi")
-                ->columns(2)
+                // ->columns(2)
                 ->description(
-                    "Informasi Pribadi Pelanggan Internet Desa Pecangaan Kulon"
+                    "Informasi Pribadi Pelanggan Internet Desa Pecangaan Kulon",
                 )
                 ->schema([
-                    ViewEntry::make('testing')
+                    ViewEntry::make("testing")
                         ->hidden(fn($record) => !$record->whitelist)
                         ->columnSpanFull()
                         ->view("livewire.is-whitelisted"),
@@ -153,7 +151,7 @@ class ViewPelanggan extends ViewRecord
                             ->icon("heroicon-o-arrow-path")
                             ->requiresConfirmation(function ($action) {
                                 $action->modalDescription(
-                                    "Akan Whitelist Pelanggan dan Pelanggan Tidak Akan Terkena Isolir pada saat waktu Pengisoliran"
+                                    "Akan Whitelist Pelanggan dan Pelanggan Tidak Akan Terkena Isolir pada saat waktu Pengisoliran",
                                 );
 
                                 return $action;
@@ -167,7 +165,7 @@ class ViewPelanggan extends ViewRecord
 
                                     ->success() // Sets the notification type to success
                                     ->send(); // Sends the notification
-                        }),
+                            }),
                         Action::make("unwhitelist pelanggan")
                             ->hidden(fn($record) => !$record->whitelist)
                             ->label("un-Whitelist Pelanggan")
@@ -175,7 +173,7 @@ class ViewPelanggan extends ViewRecord
                             ->icon("heroicon-o-arrow-path")
                             ->requiresConfirmation(function ($action) {
                                 $action->modalDescription(
-                                    "Akan Menghapus Whitelist Pelanggan dan Pelanggan Akan Terkena Isolir pada saat waktu Pengisoliran"
+                                    "Akan Menghapus Whitelist Pelanggan dan Pelanggan Akan Terkena Isolir pada saat waktu Pengisoliran",
                                 );
 
                                 return $action;
@@ -189,7 +187,7 @@ class ViewPelanggan extends ViewRecord
 
                                     ->success() // Sets the notification type to success
                                     ->send(); // Sends the notification
-                        }),
+                            }),
                     ]),
                     TextEntry::make("nama"),
                     TextEntry::make("alamat"),
@@ -198,7 +196,7 @@ class ViewPelanggan extends ViewRecord
                 ])
                 ->collapsible(),
 
-            $this->informasi_teknis()
+            $this->informasi_teknis(),
         ]);
     }
 }
