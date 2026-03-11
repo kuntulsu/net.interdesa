@@ -31,14 +31,14 @@ class ActiveClientWidget extends StatsOverviewWidget
         $this->activeClient();
 
         return [
-            Stat::make("Active Client", $this->activeClientCount)->description(
-                $this->activeClientDescriptionText,
-            ),
+            Stat::make("Active Client", $this->activeClientCount)
+                ->descriptionColor($this->activeIconColor)
+                ->description($this->activeClientDescriptionText),
         ];
     }
-    public function activeClient(): string
+    public function activeClient(): void
     {
-        if ($this->offlineClientCount->count() == 0) {
+        if ($this->offlineClientCount == 0) {
             $this->activeIcon = Heroicon::CheckCircle;
             $this->activeIconColor = "success";
             $this->activeClientDescriptionText = "100% Client Uptime!!";
