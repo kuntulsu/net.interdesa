@@ -17,7 +17,6 @@ use Filament\Pages\SubNavigationPosition;
 use Filament\Infolists\Components\TextEntry;
 use App\Filament\Resources\PelangganResource;
 use App\Helpers\Helper;
-use App\Models\System\Resource;
 use Illuminate\Support\Facades\Log;
 use Filament\Infolists\Components\ViewEntry;
 class ViewPelanggan extends ViewRecord

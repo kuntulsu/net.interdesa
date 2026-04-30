@@ -57,6 +57,14 @@ class ClientMonitor extends BaseWidget
                 ->description("Host: {$ping[0]["host"]}")
                 ->color("info")
                 ->icon("heroicon-o-arrows-up-down"),
+            Stat::make("Optical Power", "{$this->secret?->acs?->RXPower} dBm")
+                ->description("Optical Power")
+                ->color("danger")
+                ->icon("heroicon-o-bolt"),
+            Stat::make("Device Temp", "{$this->secret?->acs?->deviceTemp} C")
+                ->description("Device Temperature")
+                ->icon("heroicon-o-fire")
+                ->color("info"),
         ];
     }
     protected function _boot()

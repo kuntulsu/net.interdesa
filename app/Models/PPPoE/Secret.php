@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Database\Eloquent\Model;
 use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-
+use App\Models\ACS;
 class Secret extends Model
 {
     use Sushi;
@@ -33,7 +33,7 @@ class Secret extends Model
     ];
     protected function toSchema(
         array|Collection $data,
-        bool $one = false
+        bool $one = false,
     ): array {
         $secrets = [];
         foreach ($data as $secret) {
@@ -54,6 +54,10 @@ class Secret extends Model
     protected function sushiShouldCache()
     {
         return false;
+    }
+    public function acs()
+    {
+        return $this->hasOne(ACS::class, "pppoeUsername", "name");
     }
     public function getRows()
     {
@@ -87,11 +91,7 @@ class Secret extends Model
     }
     public function paket(): HasOne
     {
-        return $this->hasOne(
-            Profile::class,
-            "name",
-            "profile"
-        );
+        return $this->hasOne(Profile::class, "name", "profile");
     }
     public function active(): HasOne
     {
@@ -125,9 +125,9 @@ class Secret extends Model
     public static function isolir(): void
     {
         $tagihan = Tagihan::latest()->first();
-        $data = Pelanggan::whereDoesntHave("pembayaran", function (
-            $query
-        ) use ($tagihan) {
+        $data = Pelanggan::whereDoesntHave("pembayaran", function ($query) use (
+            $tagihan,
+        ) {
             $query->where("tagihan_id", $tagihan->id);
         })
             ->NotWhitelist()

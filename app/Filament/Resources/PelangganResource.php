@@ -52,7 +52,7 @@ class PelangganResource extends Resource
 
     public static function form(Schema $schema): Schema
     {
-        return $schema->columnSpanFull()->components([
+        return $schema->columns(1)->components([
             Section::make("Informasi Pribadi")
                 ->columns(2)
                 ->schema([
