@@ -80,9 +80,9 @@ class PelangganResource extends Resource
                     Select::make("secret_id")
                         ->label("Connect to PPPoE Secret")
                         // ->hiddenOn("edit")
-                        ->hidden(function ($record) {
-                            return $record?->profil ? true : false;
-                        })
+                        // ->hidden(function ($record) {
+                        //     return $record?->profil ? true : false;
+                        // })
                         ->preload()
                         ->searchable()
                         ->helperText(
@@ -177,11 +177,11 @@ class PelangganResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            // ->modifyQueryUsing(function(Builder $query) {
-            //     $query->with(["profil" => function ($query){
-            //         $query->with("secret");
-            //     }]);
-            // })
+            ->modifyQueryUsing(function(Builder $query) {
+                $query->with(["profil" => function ($query){
+                    $query->with(["secret" => fn($q) => $q->with(["acs", "active"])]);
+                }]);
+            })
             ->recordClasses(
                 fn(Pelanggan $record) => match ($record->whitelist) {
                     true
@@ -191,7 +191,24 @@ class PelangganResource extends Resource
                 },
             )
             ->columns([
-                TextColumn::make("nama")->searchable(),
+                TextColumn::make("nama")
+                ->icon(function (Pelanggan $record) {
+                    $secret = $record->profil?->secret;
+                    if ($secret?->disabled) {
+                        return "heroicon-o-lock-closed";
+                    }
+                    return $secret?->active
+                        ? "heroicon-o-arrows-up-down"
+                        : "heroicon-o-link-slash";
+                })
+                ->iconColor(function (Pelanggan $record) {
+                    $secret = $record->profil?->secret;
+                    if ($secret?->disabled) {
+                        return "danger";
+                    }
+                    return $secret?->active ? "success" : "warning";
+                })
+                ->searchable(),
                 TextColumn::make("alamat")
                     ->searchable()
                     // ->getStateUsing(function ($record){
@@ -207,15 +224,45 @@ class PelangganResource extends Resource
                     //         : "heroicon-o-link-slash";
                     // })
                     ->iconColor("primary"),
-                TextColumn::make("jatuh_tempo")->date("d F Y"),
+                TextColumn::make("profil.secret.acs.deviceTemp")
+                    ->formatStateUsing(fn ($state) => $state ? $state . " °C" : null)
+                    ->color(function (Pelanggan $record) {
+                        $deviceTemp = $record->profil?->secret?->acs?->deviceTemp;
+                        if ($deviceTemp) {
+                            return match (true) {
+                                $deviceTemp >= 80 => "danger",
+                                $deviceTemp >= 60 && $deviceTemp < 80 => "warning",
+                                $deviceTemp < 60 => "success",
+                                default => null,
+                            };
+                        }
+                        return null;
+                    })
+                    ->icon("heroicon-o-cpu-chip")
+                    ->badge()
+                    ->label("Device Temp (C)"),
+                TextColumn::make("profil.secret.acs.RXPower")
+                    ->color(function (Pelanggan $record) {
+                        $rxPower = $record->profil?->secret?->acs?->RXPower;
+                        if ($rxPower) {
+                            return match (true) {
+                                $rxPower < -25 => "danger",
+                                $rxPower < -20 && $rxPower >= -25 => "warning",
+                                $rxPower > -20 => "success",
+                                default => null,
+                            };
+                        }
+                        return null;
+                    })
+                    ->badge()
+                    ->formatStateUsing(fn ($state) => $state ? $state . " dBm" : null)
+                    ->label("Rx Power (dBm)"),
             ])
             ->filters([
                 //
             ])
             ->recordActions([ViewAction::make(), EditAction::make()])
-            ->toolbarActions([
-                BulkActionGroup::make([DeleteBulkAction::make()]),
-            ]);
+;
     }
 
     public static function getRelations(): array

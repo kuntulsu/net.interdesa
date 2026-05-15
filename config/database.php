@@ -15,7 +15,7 @@ return [
     |
     */
 
-    "default" => env("DB_CONNECTION", "sqlite"),
+    "default" => env("DB_CONNECTION"),
 
     /*
     |--------------------------------------------------------------------------
@@ -57,7 +57,7 @@ return [
             "engine" => null,
             "options" => extension_loaded("pdo_mysql")
                 ? array_filter([
-                    PDO::MYSQL_ATTR_SSL_CA => env("MYSQL_ATTR_SSL_CA"),
+                    Pdo\Mysql::ATTR_SSL_CA => env("MYSQL_ATTR_SSL_CA"),
                 ])
                 : [],
         ],
@@ -79,7 +79,7 @@ return [
             "engine" => null,
             "options" => extension_loaded("pdo_mysql")
                 ? array_filter([
-                    PDO::MYSQL_ATTR_SSL_CA => env("MYSQL_ATTR_SSL_CA"),
+                    Pdo\Mysql::ATTR_SSL_CA => env("MYSQL_ATTR_SSL_CA"),
                 ])
                 : [],
         ],
@@ -95,7 +95,7 @@ return [
             "charset" => env("DB_CHARSET", "utf8"),
             "prefix" => "",
             "prefix_indexes" => true,
-            "search_path" => "public",
+            "search_path" => env("DB_SCHEMA", "public"),
             "sslmode" => "prefer",
         ],
 

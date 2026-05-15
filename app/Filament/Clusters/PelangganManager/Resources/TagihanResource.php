@@ -88,27 +88,27 @@ class TagihanResource extends Resource
                 TextColumn::make("name")->searchable(),
                 TextColumn::make("tipe_tagihan"),
                 TextColumn::make("nominal_tagihan")->money("IDR"),
-                IconColumn::make("is_paid")
-                    ->default("")
-                    ->label("Lunas")
-                    ->icon(function($record) {
-                        if($record->lunas()){
-                            return "heroicon-o-check-circle";
-                        }
-                        return "heroicon-o-x-circle";
-                    })
-                    ->color(function($record) {
-                        if($record->lunas()){
-                            return "success";
-                        }
-                        return "warning";    
-                    }),
+                // IconColumn::make("is_paid")
+                //     ->default("")
+                //     ->label("Lunas")
+                //     ->icon(function($record) {
+                //         if($record->lunas()){
+                //             return "heroicon-o-check-circle";
+                //         }
+                //         return "heroicon-o-x-circle";
+                //     })
+                //     ->color(function($record) {
+                //         if($record->lunas()){
+                //             return "success";
+                //         }
+                //         return "warning";    
+                //     }),
                     // ->iconColor("success")
                 // Tables\Columns\TextColumn::make("end_date")
                 //     ->label("Jatuh Tempo")
                 //     ->date("d F Y"),
-                TextColumn::make("pembayaran.operator.name")
-                    ->default("-")
+                // TextColumn::make("pembayaran.operator.name")
+                //     ->default("-")
             ])
             ->filters([
                 //

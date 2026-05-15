@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
-
+use App\Models\Invoice;
 class Pelanggan extends Model
 {
     use HasFactory;
@@ -35,6 +35,24 @@ class Pelanggan extends Model
     {
         $query->where("whitelist", false);
     }
+    public function invoice()
+    {
+        return $this->hasMany(Invoice::class);
+    }
+    public function generateMonthlyInvoice()
+    {
+        $latestInvoice = $this->invoice()->latest()->first();
+        $lastInvoiceNumber = $latestInvoice ? (int) str_replace("INV-", "", $latestInvoice->invoice_number) : 0;
+        $newInvoiceNumber = "INV-" . str_pad($lastInvoiceNumber + 1, 6, "0", STR_PAD_LEFT);
+        return Invoice::create([
+            "pelanggan_id" => $this->id,
+            "invoice_number" => $newInvoiceNumber,
+            "name" => "Monthly Subscription",
+            "amount" => 100.00, // Example amount
+            "due_date" => now()->addDays(30), // Example due date
+        ]);
+    }
+
     public function odp_pelanggan(): HasManyThrough
     {
         return $this->hasManyThrough(Pelanggan::class, ODP::class);

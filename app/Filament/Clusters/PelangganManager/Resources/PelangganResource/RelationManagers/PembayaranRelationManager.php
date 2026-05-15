@@ -26,11 +26,11 @@ use Illuminate\Database\Eloquent\Builder;
 use Filament\Infolists\Components\TextEntry;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Resources\RelationManagers\RelationManager;
+use Illuminate\Support\Facades\DB;
 
 class PembayaranRelationManager extends RelationManager
 {
     protected static string $relationship = "tagihan";
-    protected bool $lunas = false;
     protected static bool $isLazy = false;
     public function isReadOnly(): bool
     {
@@ -83,28 +83,27 @@ class PembayaranRelationManager extends RelationManager
     {
         return $table
             ->modifyQueryUsing(function (Builder $query){
-                return $query->orWhere("tipe_tagihan", TipeTagihanEnum::BULANAN);
+                    
+                return $query
+                    ->with(["pembayaran" => fn($q) => $q->with("operator")->where("pelanggan_id", $this->ownerRecord->id)])
+                    ->orWhere("tipe_tagihan", TipeTagihanEnum::BULANAN)->orderBy("created_at", "desc");
             })
 
             ->columns([
                 TextColumn::make("name"),
                 TextColumn::make("tipe_tagihan"),
+
                 TextColumn::make("nominal_tagihan")
                     ->getStateUsing(function(Tagihan $record){
                         $terbayar = PembayaranPelanggan::where("tagihan_id", $record->id)
                             ->where("pelanggan_id", $this->ownerRecord->id)
                             ->first();
-                        $this->lunas = $record->lunas(
-                            ($record->tipe_tagihan == TipeTagihanEnum::BULANAN) 
-                                ? $this->ownerRecord->id 
-                                : null
-                        );
                         if($record->tipe_tagihan == TipeTagihanEnum::BULANAN){
                             $pelanggan = $this->ownerRecord;
                             $tagihan = $pelanggan->profil->secret->paket->harga?->harga;
-                            if($this->lunas){ 
+                            if($this->check_lunas($tagihan, $record->pembayaran->sum("nominal_tagihan"))){ 
                                 // tampilkan harga yang sudah terbayar untuk menghindari perubahan profile/paket pelanggan
-                                return $record->pembayaran()
+                                return $record->pembayaran
                                     ->where("pelanggan_id", $pelanggan->id)
                                     ->sum("nominal_tagihan");
                             }
@@ -113,34 +112,24 @@ class PembayaranRelationManager extends RelationManager
                         return $record->nominal_tagihan;
                     })
                     ->money("IDR"),
-                IconColumn::make("is_paid")
-                    ->default("")
+                IconColumn::make("status")
                     ->label("Lunas")
-                    ->icon(function($record) {
-                        if($this->lunas){
-                            return "heroicon-o-check-circle";
-                        }
-                        return "heroicon-o-x-circle";
-                    })
-                    ->color(function($record) {
-                        if($this->lunas){
-                            return "success";
-                        }
-                        return "warning";    
-                    }),
-                    // ->iconColor("success")
+                    ->getStateUsing(fn ($record) => $this->check_lunas($record->nominal_tagihan, $record->pembayaran->sum("nominal_tagihan")))
+                    ->icon(fn($record) => $this->check_lunas($record->nominal_tagihan, $record->pembayaran->sum("nominal_tagihan")) ? "heroicon-o-check-circle" : "heroicon-o-x-circle")
+                    ->color(fn($record) => $this->check_lunas($record->nominal_tagihan, $record->pembayaran->sum("nominal_tagihan")) ? "success" : "danger"),
                 // Tables\Columns\TextColumn::make("end_date")
                 //     ->label("Jatuh Tempo")
                 //     ->date("d F Y"),
                 TextColumn::make("operator")
+                    ->label("Operator")
                     ->getStateUsing(function (Tagihan $record){
-                        return $record->pembayaran()
+                        return $record->pembayaran
                             ->where("pelanggan_id", $this->ownerRecord->id)
                             ->where("tagihan_id", $record->id)
                             ->first()
                             ?->operator?->name;
                     })
-                    ->default("-")
+                    ->default("")
                 // Tables\Columns\TextColumn::make("terbayar.nominal_tagihan")
                 //     ->money("IDR")
                 //     ->label("Tagihan Terbayar")
@@ -160,79 +149,19 @@ class PembayaranRelationManager extends RelationManager
  
             ->recordActions([
                 Action::make("bayar")
-                    // ->modalSubmitAction(fn (StaticAction $action) => $action->label('Bayar Tagihan'))
-                    ->hidden(fn() => $this->lunas)
-
+                    ->hidden(fn($record) => $this->check_lunas($record->nominal_tagihan, $record->pembayaran->sum("nominal_tagihan")))
                     ->modalContent(fn ($action, $record) => view("components.payment-dialog", ['action' => $action, 'record' => $record]))
-                    // ->form([
-                    //     TextInput::make("nama_pelanggan")
-                    //         ->label("Nama Pelanggan")
-                    //         ->readOnly()
-                    //         ->default(fn() => $this->ownerRecord->nama),
-                    //     TextInput::make("alamat_pelanggan")
-                    //         ->label("Alamat Pelanggan")
-                    //         ->readOnly()
-                    //         ->default(fn() => $this->ownerRecord->alamat),
-                    //     TextInput::make("payment_method")
-                    //         ->default("hello")
-                    //         ->hidden(),
-                    //     TextInput::make("paket")
-                    //         ->readOnly()
-                    //         ->default(fn($record) => $this->ownerRecord->profil->secret->profile)
-                    //         ->hidden(fn($record) => ($record->tipe_tagihan != TipeTagihanEnum::BULANAN)),
-                    //     TextInput::make("tipe_tagihan")->readOnly(),
-                    //     TextInput::make("nominal_tagihan")
-                    //         // ->formatState("hello")
-                    //         ->default(function ($record) {
-                    //             if($record->tipe_tagihan == TipeTagihanEnum::BULANAN){
-                    //                 $pelanggan = $this->ownerRecord;
-                    //                 $tagihan = $pelanggan->profil->secret->paket->harga?->harga;
-                    //                 return $tagihan;
-                    //             }
-                    //             return $record->nominal_tagihan;
-                    //         }),
-                    //     TextInput::make("Operator")
-                    //         ->readOnly()
-                    //         ->default(fn() => auth()->user()->name)
-                    // ])
-                    // ->action(function($record, $data) {
-                    //     dd($data);
-                    //     if($record->tipe_tagihan == TipeTagihanEnum::BULANAN){
-                    //         $pelanggan = $this->ownerRecord;
-                    //         $tagihan = $pelanggan->profil->secret->paket->harga?->harga;
-                    //     }else{
-                    //         $tagihan = $record->nominal_tagihan;
-                    //     }
-                        
-                    //     $pembayaran = $record->pembayaran()->create([
-                    //         "pelanggan_id" => $this->ownerRecord->id,
-                    //         "user_id" => auth()->user()->id,
-                    //         "nominal_tagihan" => $data['nominal_tagihan'] ?? $tagihan
-                    //     ]);
-
-                    //     if($pembayaran) {
-                    //         Notification::make("payment_success")
-                    //             ->success()
-                    //             ->title("Pembayaran Berhasil")
-                    //             ->send();
-                    //     }
-
-                    // })
-                    // ->infolist([
-                    //     TextEntry::make("nama_pelanggan")
-                    //         ->label("Nama Pelanggan")
-                    //         ->default(fn() => $this->ownerRecord->nama),
-                    // ])
                     ->modalSubmitAction(false)
                     ->modalCancelAction(false)
                     ->icon("heroicon-o-banknotes")
                     ->button(),
-                // Tables\Actions\EditAction::make(),
-                // Tables\Actions\DeleteAction::make(),
 
                 Action::make("invoice")
-                    ->action(fn($record) => dd($record))
                     ->icon("heroicon-o-eye")
+                    ->hidden(fn($record) => !$this->check_lunas(
+                        $record->nominal_tagihan ?? $this->ownerRecord->pelanggan->profil->secret->paket->harga?->harga,
+                        $record->pembayaran->sum("nominal_tagihan")
+                    ))
                     ->schema([
                         Section::make()
                             ->columns(2)
@@ -266,13 +195,8 @@ class PembayaranRelationManager extends RelationManager
                         
                         
                     ])
-                    // ->action(function () {
-                    //     $this->js("window.print()");
-                    // })
                     ->url(function ($record) {
-                        $pembayaran = $record->pembayaran()
-                            ->where("tagihan_id", $record->id)
-                            ->where("pelanggan_id", $this->ownerRecord->id)
+                        $pembayaran = $record->pembayaran
                             ->first();
                         if($pembayaran){
                             return route("invoice", ["pembayaran" => $pembayaran->id]);
@@ -282,12 +206,7 @@ class PembayaranRelationManager extends RelationManager
                     ->modalSubmitActionLabel("Print")
                     ->modalCancelAction(false)
                     ->modalCloseButton(false)
-                    ->hidden(function ($record) {
-                        $pembayaranLunas = $record->pembayaran()->where("pelanggan_id", $this->ownerRecord->id)
-                            ->where("tagihan_id", $record->id)
-                            ->first();
-                        return ($pembayaranLunas) ? false : true;
-                    })
+                    ->color("success")
                     ->button()
             ])
             ->toolbarActions([
@@ -295,5 +214,13 @@ class PembayaranRelationManager extends RelationManager
                     // Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
+    }
+
+    public function check_lunas(int $tagihan, int $dibayar): bool
+    {
+        if ($tagihan == 0) {
+            $tagihan = $this->ownerRecord->profil->secret->paket->harga?->harga ?? 0;
+        }
+        return (float)$dibayar >= (float)$tagihan;
     }
 }

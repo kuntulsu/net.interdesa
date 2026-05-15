@@ -15,6 +15,7 @@ class Profile extends Model
 {
     use Sushi;
     protected $primaryKey = "id";
+    protected $keyType = "string";
     protected $guarded = [];
     protected function sushiShouldCache()
     {

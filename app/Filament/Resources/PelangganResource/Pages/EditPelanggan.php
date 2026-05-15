@@ -7,7 +7,6 @@ use App\Models\PPPoE\Secret;
 use App\Models\ProfilPelanggan;
 use Filament\Actions\DeleteAction;
 use App\Filament\Resources\PelangganResource;
-use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Database\Eloquent\Model;
 
@@ -39,7 +38,7 @@ class EditPelanggan extends EditRecord
             unset($data["secret"]["id"]);
             $secret->update($data["secret"]);
         }
-
+    
         if (isset($data["secret_id"])) {
             ProfilPelanggan::create([
                 "pelanggan_id" => $record->id,

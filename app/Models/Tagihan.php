@@ -19,27 +19,33 @@ class Tagihan extends Model
     {
         return $this->hasMany(PembayaranPelanggan::class);
     }
-    public function lunas(int|bool $pelanggan_id = null)
+    public function user()
     {
-        $tagihan = 0;
-        $terbayar = 0;
-        if(is_null($pelanggan_id)){
-            $tagihan = $this->nominal_tagihan ?? 0;
-            $terbayar = $this->pembayaran()->sum("nominal_tagihan") ?? 0;
-        }
-        if($pelanggan_id && $this->tipe_tagihan == TipeTagihanEnum::BULANAN) {
-            // $pelanggan = Pelanggan::find($pelanggan_id);
-            $pembayaran = $this->pembayaran()->where("pelanggan_id", $pelanggan_id)->first();
-            if($pembayaran){
-                return true;
-            }else{
-                return false;
-            }
-            // $tagihan = $pelanggan->profil->secret->paket->harga?->harga;
-            // $terbayar = $pembayaran->nominal_tagihan ?? 0;
-        }
-        return (float)$tagihan <= (float)$terbayar;
-        // return $this->hasOne(PembayaranPelanggan::class);
+        return $this->belongsTo(User::class, "user_id", "id");
+    }
+    public function lunas()
+    {
+        // dd($this->id);
+        // $tagihan = 0;
+        // $terbayar = 0;
+        // if(!$pelanggan_id){
+        //     $tagihan = $this->nominal_tagihan ?? 0;
+        //     $terbayar = $this->pembayaran()->sum("nominal_tagihan") ?? 0;
+        // }
+        // if($pelanggan_id && $this->tipe_tagihan == TipeTagihanEnum::BULANAN) {
+        //     // $pelanggan = Pelanggan::find($pelanggan_id);
+        //     $pembayaran = $this->pembayaran()->where("pelanggan_id", $pelanggan_id)->first();
+        //     if($pembayaran){
+        //         return true;
+        //     }else{
+        //         return false;
+        //     }
+        //     // $tagihan = $pelanggan->profil->secret->paket->harga?->harga;
+        //     // $terbayar = $pembayaran->nominal_tagihan ?? 0;
+        // }
+        // return (float)$tagihan <= (float)$terbayar;
+        // // return $this->hasOne(PembayaranPelanggan::class);
+        return (float)$this->pembayaran()->sum("nominal_tagihan") >= (float)$this->nominal_tagihan;
     }
 
     protected function casts(): array

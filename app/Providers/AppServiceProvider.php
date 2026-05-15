@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\ServiceProvider;
+use Filament\Support\Facades\FilamentView;
+use Illuminate\Support\Facades\Blade;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -28,5 +30,9 @@ class AppServiceProvider extends ServiceProvider
                 ->withBasicAuth(config("routeros.username"), config("routeros.password"))
                 ->baseUrl("{$http_scheme}://".config("routeros.host").":".config("routeros.port")."/rest");
         });
+        FilamentView::registerRenderHook(
+            'panels::body.end',
+            fn (): string => Blade::render("@vite('resources/js/app.js')")
+        );
     }
 }

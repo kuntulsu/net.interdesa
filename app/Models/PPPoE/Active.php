@@ -12,6 +12,8 @@ use Filament\Notifications\Notification;
 class Active extends Model
 {
     use Sushi;
+    protected $primaryKey = "id";
+    protected $keyType = "string";
     protected $schema = [
         "id" => "string",
         "name" => "string",

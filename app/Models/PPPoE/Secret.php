@@ -20,6 +20,7 @@ class Secret extends Model
 {
     use Sushi;
     protected $primaryKey = "id";
+    protected $keyType = "string";
     protected $guarded = [];
     protected $schema = [
         "id" => "string",
@@ -87,7 +88,10 @@ class Secret extends Model
     }
     public function profil(): HasOne
     {
-        return $this->hasOne(ProfilPelanggan::class);
+        return $this->hasOne(ProfilPelanggan::class,
+            'secret_id', // FK on profil_pelanggan
+            'id'         // PK on secrets
+        );
     }
     public function paket(): HasOne
     {

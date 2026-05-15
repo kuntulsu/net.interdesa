@@ -63,7 +63,7 @@ class ClientMonitor extends BaseWidget
                 ->icon("heroicon-o-bolt"),
             Stat::make("Device Temp", "{$this->secret?->acs?->deviceTemp} C")
                 ->description("Device Temperature")
-                ->icon("heroicon-o-fire")
+                ->icon("heroicon-o-cpu-chip")
                 ->color("info"),
         ];
     }

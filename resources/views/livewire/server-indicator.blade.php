@@ -1,4 +1,4 @@
-<div wire:poll.5s="">
+<div>
     @if($this->isUp)
 
         <x-filament::button icon="heroicon-m-arrows-up-down" color="success">
