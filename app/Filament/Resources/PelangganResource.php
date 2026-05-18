@@ -23,6 +23,7 @@ use App\Models\Pelanggan;
 use Filament\Tables\Table;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
+use Filament\Support\Enums\FontWeight;
 
 use Filament\Resources\Pages\Page;
 use Filament\Forms\Components\Hidden;
@@ -193,6 +194,7 @@ class PelangganResource extends Resource
             ->stackedOnMobile()
             ->columns([
                 TextColumn::make("nama")
+                ->weight(FontWeight::Bold)
                 ->icon(function (Pelanggan $record) {
                     $secret = $record->profil?->secret;
                     if ($secret?->disabled) {
