@@ -51,6 +51,7 @@ class AdminPanelProvider extends PanelProvider
                     Vite::asset("resources/css/app.css"),
                 ),
             ])
+            ->globalSearch(false)
             ->colors([
                 "primary" => Color::Blue,
             ])
