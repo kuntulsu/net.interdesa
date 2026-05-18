@@ -88,7 +88,7 @@ class PembayaranRelationManager extends RelationManager
                     ->with(["pembayaran" => fn($q) => $q->with("operator")->where("pelanggan_id", $this->ownerRecord->id)])
                     ->orWhere("tipe_tagihan", TipeTagihanEnum::BULANAN)->orderBy("created_at", "desc");
             })
-
+            ->stackedOnMobile()
             ->columns([
                 TextColumn::make("name"),
                 TextColumn::make("tipe_tagihan"),
@@ -216,8 +216,11 @@ class PembayaranRelationManager extends RelationManager
             ]);
     }
 
-    public function check_lunas(int $tagihan, int $dibayar): bool
+    public function check_lunas(int|null $tagihan, int|null $dibayar): bool
     {
+        if ($dibayar > 0) {
+            return true;
+        }
         if ($tagihan == 0) {
             $tagihan = $this->ownerRecord->profil->secret->paket->harga?->harga ?? 0;
         }
