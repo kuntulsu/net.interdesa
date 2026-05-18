@@ -190,6 +190,7 @@ class PelangganResource extends Resource
                     default => null,
                 },
             )
+            ->stackedOnMobile()
             ->columns([
                 TextColumn::make("nama")
                 ->icon(function (Pelanggan $record) {
